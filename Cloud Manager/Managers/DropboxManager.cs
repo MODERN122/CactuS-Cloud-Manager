@@ -91,7 +91,6 @@ namespace Cloud_Manager
         {
             MainWindow.mainWindow.previousPath = MainWindow.mainWindow.CurrentPath;
             MainWindow.mainWindow.CurrentPath = path;
-            MainWindow.mainWindow.selectedItems.Clear();
             if (parent == "root" || path == "/Dropbox")
             {
                 var task = Task.Run(this.ListRootFolder);
@@ -197,15 +196,7 @@ namespace Cloud_Manager
             }
         }
 
-        public override void CutFiles()
-        {
-            foreach (var selectedItem in MainWindow.mainWindow.selectedItems)
-            {
-                MainWindow.mainWindow.cutItems.Add(selectedItem);
-            }
-        }
-
-        public override void PasteFiles()
+        public override void PasteFiles(ICollection<FileStructure> cutFiles)
         {
             string path = MainWindow.mainWindow.CurrentPath;
             if (path == "/Dropbox")
@@ -216,7 +207,7 @@ namespace Cloud_Manager
                 path = path.Substring(path.IndexOf("/"));
             }
             var list = dbx.Files.ListFolderAsync(string.Empty, true).Result;
-            foreach (var item in MainWindow.mainWindow.cutItems)
+            foreach (var item in cutFiles)
             {
                 foreach (var listItem in list.Entries)
                 {
@@ -224,7 +215,6 @@ namespace Cloud_Manager
                         dbx.Files.MoveV2Async(listItem.PathDisplay, path + "/" + listItem.Name);
                 }
             }
-            MainWindow.mainWindow.cutItems.Clear();
         }
 
         public override void CreateFolder(string name)
@@ -242,10 +232,10 @@ namespace Cloud_Manager
             }
         }
 
-        public override void RemoveFile()
+        public override void RemoveFile(ICollection<FileStructure> selectedFiles)
         {
             var list = dbx.Files.ListFolderAsync(string.Empty, true);
-            foreach (var selectedItem in MainWindow.mainWindow.selectedItems)
+            foreach (var selectedItem in selectedFiles)
             {
                 foreach (var listItem in list.Result.Entries)
                 {
@@ -256,12 +246,12 @@ namespace Cloud_Manager
 
         }
 
-        public override void TrashFile()
+        public override void TrashFile(ICollection<FileStructure> selectedFiles)
         {
-            RemoveFile();
+            RemoveFile(selectedFiles);
         }
 
-        public override void UnTrashFile()
+        public override void UnTrashFile(ICollection<FileStructure> selectedFiles)
         {
             // There is no access to trash from .NET API
         }
@@ -271,49 +261,23 @@ namespace Cloud_Manager
             // There is no access to trash from .NET API
         }
 
-        public override void RenameFile()
+        public override void RenameFile(ICollection<FileStructure> selectedFiles, string newName)
         {
             var list = dbx.Files.ListFolderAsync(string.Empty, true).Result;
-            var name = MainWindow.mainWindow.txtRenamedFile.Text;
             foreach (var listItem in list.Entries)
             {
-                if ((listItem.IsFile && listItem.AsFile.Id == MainWindow.mainWindow.selectedItems.First<Google.Apis.Drive.v3.Data.File>().Id)
-                    || (listItem.IsFolder && listItem.AsFolder.Id == MainWindow.mainWindow.selectedItems.First<Google.Apis.Drive.v3.Data.File>().Id))
+                if ((listItem.IsFile && listItem.AsFile.Id == selectedFiles.First<FileStructure>().Id)
+                    || (listItem.IsFolder && listItem.AsFolder.Id == selectedFiles.First<FileStructure>().Id))
                 {
                     var path = listItem.PathDisplay;
                     path = path.Substring(0, path.LastIndexOf("/"));
-                    dbx.Files.MoveV2Async(listItem.PathDisplay, path + "/" + name);
+                    if(listItem.Name.IndexOf('.')>=0)
+                        newName += listItem.Name.Substring(listItem.Name.LastIndexOf('.'));
+                    dbx.Files.MoveV2Async(listItem.PathDisplay, path + "/" + newName);
                 }
             }
             MainWindow.mainWindow.cutItems.Clear();
         }
 
-        public ObservableCollection<Google.Apis.Drive.v3.Data.File> Convert()
-        {
-            ObservableCollection<Google.Apis.Drive.v3.Data.File> files = new ObservableCollection<Google.Apis.Drive.v3.Data.File>();
-            foreach (var file in folderItems.Entries)
-            {
-                Google.Apis.Drive.v3.Data.File newFile = new Google.Apis.Drive.v3.Data.File()
-                {
-
-                };
-                newFile.Name = file.Name;
-                if (file.IsFile)
-                {
-                    newFile.Size = (long)file.AsFile.Size;
-                    newFile.FileExtension = file.Name.Substring(file.Name.LastIndexOf(".") + 1);
-                    newFile.Id = file.AsFile.Id;
-                    newFile.ModifiedByMeTime = file.AsFile.ClientModified;
-                }
-                else if (file.IsFolder)
-                {
-                    newFile.Id = file.AsFolder.Id;
-                }
-
-
-                files.Add(newFile);
-            }
-            return files;
-        }
     }
 }

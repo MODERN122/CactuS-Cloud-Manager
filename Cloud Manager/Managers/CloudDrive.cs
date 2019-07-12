@@ -32,14 +32,13 @@ namespace Cloud_Manager
         public abstract void InitTrash();
         public abstract void DownloadFile(string name, string id);
         public abstract void UploadFile();
-        public abstract void CutFiles();
-        public abstract void PasteFiles();
+        public abstract void PasteFiles(ICollection<FileStructure> cutFiles);
         public abstract void CreateFolder(string name);
-        public abstract void RemoveFile();
-        public abstract void TrashFile();
-        public abstract void UnTrashFile();
+        public abstract void RemoveFile(ICollection<FileStructure> selectedFiles);
+        public abstract void TrashFile(ICollection<FileStructure> selectedFiles);
+        public abstract void UnTrashFile(ICollection<FileStructure> selectedFiles);
         public abstract void ClearTrash();
-        public abstract void RenameFile();
+        public abstract void RenameFile(ICollection<FileStructure> selectedFiles, string newName);
 
 
         public virtual ObservableCollection<Object> FolderItems { get; set; }

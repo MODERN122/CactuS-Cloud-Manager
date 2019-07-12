@@ -37,9 +37,6 @@ namespace Cloud_Manager
         private ObservableCollection<Google.Apis.Drive.v3.Data.File> folderItems;
         public DriveService service;
 
-        public readonly ICollection<Google.Apis.Drive.v3.Data.File> selectedItems = new Collection<Google.Apis.Drive.v3.Data.File>();
-        public readonly ICollection<Google.Apis.Drive.v3.Data.File> cutItems = new Collection<Google.Apis.Drive.v3.Data.File>();
-
         public GoogleDriveManager()
         {
             UserCredential credential = GetCredentials();
@@ -84,7 +81,6 @@ namespace Cloud_Manager
         public override void InitFolder(string path, string fileParent = "")
         {
             MainWindow.mainWindow.selectedItems.Clear();
-            selectedItems.Clear();
             if (path == "/Google Drive/Trash")
             {
                 InitTrash();
@@ -228,29 +224,18 @@ namespace Cloud_Manager
             }
         }
 
-        public override void CutFiles()
-        {
-            foreach (var selectedItem in selectedItems)
-            {
-                cutItems.Add(selectedItem);
-                MainWindow.mainWindow.cutItems.Add(selectedItem);
-            }
-        }
-
-        public override void PasteFiles()
+        public override void PasteFiles(ICollection<FileStructure> cutFiles)
         {
             FilesResource.UpdateRequest updateRequest;
-            if (cutItems.Count > 0)
+            if (cutFiles.Count > 0)
             {
-                foreach (var cutItem in cutItems)
+                foreach (var cutItem in cutFiles)
                 {
                     updateRequest = service.Files.Update(new Google.Apis.Drive.v3.Data.File(), cutItem.Id);
                     updateRequest.RemoveParents = cutItem.Parents[0];
                     updateRequest.AddParents = FolderItems[0].Parents[0];
                     updateRequest.Execute();
                 }
-                cutItems.Clear();
-                MainWindow.mainWindow.cutItems.Clear();
             }
         }
 
@@ -266,17 +251,17 @@ namespace Cloud_Manager
             service.Files.Create(fileMetaData).Execute();
         }
 
-        public override void RemoveFile()
+        public override void RemoveFile(ICollection<FileStructure> selectedFiles)
         {
-            foreach (var item in selectedItems)
+            foreach (var item in selectedFiles)
             {
                 service.Files.Delete(item.Id).Execute();
             }
         }
 
-        public override void TrashFile()
+        public override void TrashFile(ICollection<FileStructure> selectedFiles)
         {
-            foreach (var item in selectedItems)
+            foreach (var item in selectedFiles)
             {
                 Google.Apis.Drive.v3.Data.File file = new Google.Apis.Drive.v3.Data.File();
                 file.Trashed = true;
@@ -284,9 +269,9 @@ namespace Cloud_Manager
             }
         }
 
-        public override void UnTrashFile()
+        public override void UnTrashFile(ICollection<FileStructure> selectedFiles)
         {
-            foreach (var item in selectedItems)
+            foreach (var item in selectedFiles)
             {
                 Google.Apis.Drive.v3.Data.File file = new Google.Apis.Drive.v3.Data.File();
                 file.Trashed = false;
@@ -299,11 +284,13 @@ namespace Cloud_Manager
             service.Files.EmptyTrash().Execute();
         }
 
-        public override void RenameFile()
+        public override void RenameFile(ICollection<FileStructure> selectedFiles, string newName)
         {
-            Google.Apis.Drive.v3.Data.File file = new Google.Apis.Drive.v3.Data.File();
-            file.Name = MainWindow.mainWindow.txtRenamedFile.Text;
-            service.Files.Update(file, selectedItems.First<Google.Apis.Drive.v3.Data.File>().Id).Execute();
+            Google.Apis.Drive.v3.Data.File file = new Google.Apis.Drive.v3.Data.File
+            {
+                Name = newName
+            };
+            service.Files.Update(file, selectedFiles.First<FileStructure>().Id).Execute();
         }
     }
 }

@@ -44,10 +44,10 @@ namespace Cloud_Manager
 
         private static Drives currentDrive;
 
-        private ObservableCollection<Google.Apis.Drive.v3.Data.File> folderItemsGoogleDrive;
+        private ObservableCollection<FileStructure> folderItems;
 
-        public readonly ICollection<Google.Apis.Drive.v3.Data.File> selectedItems = new Collection<Google.Apis.Drive.v3.Data.File>();
-        public readonly ICollection<Google.Apis.Drive.v3.Data.File> cutItems = new Collection<Google.Apis.Drive.v3.Data.File>();
+        public readonly ICollection<FileStructure> selectedItems = new Collection<FileStructure>();
+        public readonly ICollection<FileStructure> cutItems = new Collection<FileStructure>();
 
         private string currentPath;
         public string previousPath, downloadFileName;
@@ -69,15 +69,15 @@ namespace Cloud_Manager
             InitStartFolder();
         }
 
-        public ObservableCollection<Google.Apis.Drive.v3.Data.File> FolderItems
+        public ObservableCollection<FileStructure> FolderItems
         {
             get
             {
-                return this.folderItemsGoogleDrive;
+                return this.folderItems;
             }
             set
             {
-                this.folderItemsGoogleDrive = value;
+                this.folderItems = value;
                 this.OnPropertyChanged("FolderItems");
                 this.OnPropertyChanged("WindowTitle");
             }
@@ -93,9 +93,9 @@ namespace Cloud_Manager
 
         private void InitStartFolder()
         {
-            FolderItems = new ObservableCollection<Google.Apis.Drive.v3.Data.File>();
-            FolderItems.Add(new Google.Apis.Drive.v3.Data.File());
-            FolderItems.Add(new Google.Apis.Drive.v3.Data.File());
+            FolderItems = new ObservableCollection<FileStructure>();
+            FolderItems.Add(new FileStructure());
+            FolderItems.Add(new FileStructure());
 
             FolderItems[0].Name = "Google Drive";
             FolderItems[1].Name = "Dropbox";
@@ -123,9 +123,9 @@ namespace Cloud_Manager
         {
             if(CurrentPath == "/")
             {
-                FolderItems = new ObservableCollection<Google.Apis.Drive.v3.Data.File>();
-                FolderItems.Add(new Google.Apis.Drive.v3.Data.File());
-                FolderItems.Add(new Google.Apis.Drive.v3.Data.File());
+                FolderItems = new ObservableCollection<FileStructure>();
+                FolderItems.Add(new FileStructure());
+                FolderItems.Add(new FileStructure());
 
                 FolderItems[0].Name = "Google Drive";
                 FolderItems[1].Name = "Dropbox";
@@ -139,12 +139,12 @@ namespace Cloud_Manager
                         if (CurrentPath == "/Google Drive/Trash")
                         {
                             cloudDrives[0].InitTrash();
-                            FolderItems = (cloudDrives[0] as GoogleDriveManager).FolderItems;
+                            FolderItems = FileStructure.Convert((cloudDrives[0] as GoogleDriveManager).FolderItems, currentPath);
                         }
                         else
                         {
                             cloudDrives[0].InitFolder(CurrentPath, FolderItems[0].Parents[0]);
-                            FolderItems = (cloudDrives[0] as GoogleDriveManager).FolderItems;
+                            FolderItems = FileStructure.Convert((cloudDrives[0] as GoogleDriveManager).FolderItems, currentPath);
                         }
                         break;
 
@@ -152,12 +152,12 @@ namespace Cloud_Manager
                         if (CurrentPath == "/Dropbox/Trash")
                         {
                             cloudDrives[1].InitTrash();
-                            FolderItems = (cloudDrives[1] as DropboxManager).Convert();
+                            FolderItems = FileStructure.Convert((cloudDrives[1] as DropboxManager).FolderItems, currentPath);
                         }
                         else
                         {
                             cloudDrives[1].InitFolder(CurrentPath);
-                            FolderItems = (cloudDrives[1] as DropboxManager).Convert();
+                            FolderItems = FileStructure.Convert((cloudDrives[1] as DropboxManager).FolderItems, currentPath);
                         }
                         break;
                 }
@@ -175,9 +175,9 @@ namespace Cloud_Manager
                 previousPath = CurrentPath;
                 CurrentPath = "/";
 
-                FolderItems = new ObservableCollection<Google.Apis.Drive.v3.Data.File>();
-                FolderItems.Add(new Google.Apis.Drive.v3.Data.File());
-                FolderItems.Add(new Google.Apis.Drive.v3.Data.File());
+                FolderItems = new ObservableCollection<FileStructure>();
+                FolderItems.Add(new FileStructure());
+                FolderItems.Add(new FileStructure());
                 FolderItems[0].Name = "Google Drive";
                 FolderItems[1].Name = "Dropbox";
             }
@@ -189,7 +189,7 @@ namespace Cloud_Manager
                         if (CurrentPath == "/Google Drive/Trash")
                         {
                             cloudDrives[0].InitFolder("/Google Drive", "root");
-                            FolderItems = (cloudDrives[0] as GoogleDriveManager).FolderItems;
+                            FolderItems = FileStructure.Convert((cloudDrives[0] as GoogleDriveManager).FolderItems, currentPath);
                         }
                         else
                         {
@@ -200,7 +200,7 @@ namespace Cloud_Manager
                             listRequest.Q = "name = '" + tmpstr + "'";
                             var files = listRequest.Execute().Files;
                             cloudDrives[0].InitFolder(CurrentPath.Substring(0, CurrentPath.LastIndexOf("/")), files[0].Parents[0]);
-                            FolderItems = (cloudDrives[0] as GoogleDriveManager).FolderItems;
+                            FolderItems = FileStructure.Convert((cloudDrives[0] as GoogleDriveManager).FolderItems, currentPath);
                         }
                         break;
 
@@ -208,12 +208,12 @@ namespace Cloud_Manager
                         if(CurrentPath == "/Dropbox/Trash")
                         {
                             cloudDrives[1].InitFolder(CurrentPath, "root");
-                            FolderItems = (cloudDrives[1] as DropboxManager).Convert();
+                            FolderItems = FileStructure.Convert((cloudDrives[1] as DropboxManager).FolderItems, currentPath);
                         }
                         else
                         {
                             cloudDrives[1].InitFolder(CurrentPath.Substring(0, CurrentPath.LastIndexOf("/")));
-                            FolderItems = (cloudDrives[1] as DropboxManager).Convert();
+                            FolderItems = FileStructure.Convert((cloudDrives[1] as DropboxManager).FolderItems, currentPath);
                         }
 
                         break;
@@ -227,9 +227,9 @@ namespace Cloud_Manager
             previousPath = CurrentPath;
             CurrentPath = "/";
 
-            FolderItems = new ObservableCollection<Google.Apis.Drive.v3.Data.File>();
-            FolderItems.Add(new Google.Apis.Drive.v3.Data.File());
-            FolderItems.Add(new Google.Apis.Drive.v3.Data.File());
+            FolderItems = new ObservableCollection<FileStructure>();
+            FolderItems.Add(new FileStructure());
+            FolderItems.Add(new FileStructure());
             FolderItems[0].Name = "Google Drive";
             FolderItems[1].Name = "Dropbox";
 
@@ -243,22 +243,22 @@ namespace Cloud_Manager
                 previousPath = CurrentPath;
                 CurrentPath = "/";
 
-                FolderItems = new ObservableCollection<Google.Apis.Drive.v3.Data.File>();
-                FolderItems.Add(new Google.Apis.Drive.v3.Data.File());
-                FolderItems.Add(new Google.Apis.Drive.v3.Data.File());
+                FolderItems = new ObservableCollection<FileStructure>();
+                FolderItems.Add(new FileStructure());
+                FolderItems.Add(new FileStructure());
                 FolderItems[0].Name = "Google Drive";
                 FolderItems[1].Name = "Dropbox";
             }
             else if (previousPath == "/Google Drive")
             {
                 cloudDrives[0].InitFolder("/Google Drive", "root");
-                FolderItems = (cloudDrives[0] as GoogleDriveManager).FolderItems;
+                FolderItems = FileStructure.Convert((cloudDrives[0] as GoogleDriveManager).FolderItems, currentPath);
 
             }
             else if (previousPath == "/Dropbox")
             {
                 cloudDrives[1].InitFolder("/Dropbox", "root");
-                FolderItems = (cloudDrives[1] as DropboxManager).Convert();
+                FolderItems = FolderItems = FileStructure.Convert((cloudDrives[1] as DropboxManager).FolderItems, currentPath);
             }
             else
             {
@@ -275,13 +275,13 @@ namespace Cloud_Manager
                         if (files != null && files.Count > 0)
                         {
                             cloudDrives[0].InitFolder(previousPath, files[0].Id);
-                            FolderItems = (cloudDrives[0] as GoogleDriveManager).FolderItems;
+                            FolderItems = FileStructure.Convert((cloudDrives[0] as GoogleDriveManager).FolderItems, currentPath);
                         }
                         break;
 
                     case Drives.Dropbox:
                         cloudDrives[1].InitFolder(previousPath);
-                        FolderItems = (cloudDrives[1] as DropboxManager).Convert();
+                        FolderItems = FolderItems = FileStructure.Convert((cloudDrives[1] as DropboxManager).FolderItems, currentPath);
                         break;
                 }
             }
@@ -302,13 +302,20 @@ namespace Cloud_Manager
 
         private void cut_Click(object sender, RoutedEventArgs e)
         {
-            cloudDrives[(int)currentDrive].CutFiles();
+            cutItems.Clear();
+            foreach (var item in selectedItems)
+            {
+                cutItems.Add(item);
+            }
+            selectedItems.Clear();
+
             NotifyMenuItems();
         }
 
         private void paste_Click(object sender, RoutedEventArgs e)
         {
-            cloudDrives[(int)currentDrive].PasteFiles();
+            cloudDrives[(int)currentDrive].PasteFiles(cutItems);
+            cutItems.Clear();
             NotifyMenuItems();
             OnPropertyChanged("FolderItems");
         }
@@ -326,19 +333,19 @@ namespace Cloud_Manager
 
         private void remove_Click(object sender, RoutedEventArgs e)
         {
-            cloudDrives[(int)currentDrive].RemoveFile();
+            cloudDrives[(int)currentDrive].RemoveFile(selectedItems);
             
         }
 
         private void trash_Click(object sender, RoutedEventArgs e)
         {
-            cloudDrives[(int)currentDrive].TrashFile();
+            cloudDrives[(int)currentDrive].TrashFile(selectedItems);
             OnPropertyChanged("FolderItems");
         }
 
         private void untrash_Click(object sender, RoutedEventArgs e)
         {
-            cloudDrives[(int)currentDrive].UnTrashFile();
+            cloudDrives[(int)currentDrive].UnTrashFile(selectedItems);
             OnPropertyChanged("FolderItems");
         }
 
@@ -357,7 +364,8 @@ namespace Cloud_Manager
         {
 
             MainWindow.mainWindow.popupNewFolder.IsOpen = false;
-            cloudDrives[(int)currentDrive].RenameFile();
+            cloudDrives[(int)currentDrive].RenameFile(selectedItems, txtRenamedFile.Text);
+            selectedItems.Clear();
             OnPropertyChanged("FolderItems");
         }
         
@@ -407,23 +415,19 @@ namespace Cloud_Manager
         {
             if (e.AddedItems.Count > 0)
             {
-                var items = e.AddedItems.Cast<Google.Apis.Drive.v3.Data.File>();
+                var items = e.AddedItems.Cast<FileStructure>();
                 foreach (var item in items)
                 {
                     selectedItems.Add(item);
-                    if(currentDrive==Drives.GoogleDrive)
-                        (cloudDrives[0] as GoogleDriveManager).selectedItems.Add(item);
                 }
             }
 
             if (e.RemovedItems.Count > 0)
             {
-                var items = e.RemovedItems.Cast<Google.Apis.Drive.v3.Data.File>();
+                var items = e.RemovedItems.Cast<FileStructure>();
                 foreach (var item in items)
                 {
                     selectedItems.Remove(item);
-                    if (currentDrive == Drives.GoogleDrive)
-                        (cloudDrives[0] as GoogleDriveManager).selectedItems.Remove(item);
                 }
             }
 
@@ -432,7 +436,7 @@ namespace Cloud_Manager
 
         private void gridItems_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            Google.Apis.Drive.v3.Data.File item = this.gridItems.SelectedItem as Google.Apis.Drive.v3.Data.File;
+            FileStructure item = this.gridItems.SelectedItem as FileStructure;
             if (CurrentPath == "/")
             {
                 switch(item.Name)
@@ -440,17 +444,13 @@ namespace Cloud_Manager
                     case "Google Drive":
                         currentDrive = Drives.GoogleDrive;
                         cloudDrives[0].InitFolder(CurrentPath+"Google Drive", "root");
-                        FolderItems = (cloudDrives[0] as GoogleDriveManager).FolderItems;
+                        FolderItems = FileStructure.Convert((cloudDrives[0] as GoogleDriveManager).FolderItems, currentPath);
                         break;
 
                     case "Dropbox":
                         currentDrive = Drives.Dropbox;
                         cloudDrives[1].InitFolder(CurrentPath + "Dropbox", "root");
-                        FolderItems = (cloudDrives[1] as DropboxManager).Convert();
-                        //FolderItems.Add(new Google.Apis.Drive.v3.Data.File()
-                        //{
-                        //    Name = "Trash"
-                        //});
+                        FolderItems = FileStructure.Convert((cloudDrives[1] as DropboxManager).FolderItems, currentPath);
                         break;
                 }
             }
@@ -460,11 +460,11 @@ namespace Cloud_Manager
                 {
                     case Drives.GoogleDrive:
                         cloudDrives[0].InitFolder(CurrentPath + "/" + item.Name, item.Id);
-                        FolderItems = (cloudDrives[0] as GoogleDriveManager).FolderItems;
+                        FolderItems = FileStructure.Convert((cloudDrives[0] as GoogleDriveManager).FolderItems, currentPath);
                         break;
                     case Drives.Dropbox:
                         cloudDrives[1].InitFolder(CurrentPath + "/" + item.Name, item.Id);
-                        FolderItems = (cloudDrives[1] as DropboxManager).Convert();
+                        FolderItems = FileStructure.Convert((cloudDrives[1] as DropboxManager).FolderItems, currentPath);
                         break;
                 }
             }
