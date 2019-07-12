@@ -131,6 +131,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Factories\DropboxFactory.cs" />
+    <Compile Include="FileStructure.cs" />
     <Compile Include="Managers\CloudDrive.cs" />
     <Compile Include="Factories\CloudFactory.cs" />
     <Compile Include="Converters\ItemSizeConverter.cs" />
