@@ -130,13 +130,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Factories\DropboxFactory.cs" />
+    <Compile Include="CloudInfo.cs" />
     <Compile Include="FileStructure.cs" />
     <Compile Include="Managers\CloudDrive.cs" />
-    <Compile Include="Factories\CloudFactory.cs" />
     <Compile Include="Converters\ItemSizeConverter.cs" />
     <Compile Include="Managers\DropboxManager.cs" />
-    <Compile Include="Factories\GoogleDriveFactory.cs" />
     <Compile Include="Managers\GoogleDriveManager.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
