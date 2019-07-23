@@ -28,29 +28,35 @@ using Google.Apis.Drive.v3.Data;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Download;
 
-namespace Cloud_Manager
+namespace Cloud_Manager.Managers
 {
     class GoogleDriveManager : CloudDrive
     {
         static string[] Scopes = { DriveService.Scope.Drive };
 
-        private ObservableCollection<Google.Apis.Drive.v3.Data.File> folderItems;
         public DriveService service;
+        private UserCredential credential;
+
+        public static string root = "";
+
+        public ObservableCollection<Google.Apis.Drive.v3.Data.File> FolderItems { get; set; }
 
         public GoogleDriveManager()
         {
-            UserCredential credential = GetCredentials();
+            credential = GetCredentials();
 
             service = new DriveService(new BaseClientService.Initializer()
             {
                 HttpClientInitializer = credential,
                 ApplicationName = MainWindow.windowName,
             });
+
+            SetRoot();
         }
 
         private static UserCredential GetCredentials()
         {
-            UserCredential credential;
+            UserCredential credential; 
 
             using (var stream = new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
             {
@@ -69,78 +75,21 @@ namespace Cloud_Manager
             return credential;
         }
 
-        public ObservableCollection<Google.Apis.Drive.v3.Data.File> FolderItems
-        {
-            get { return this.folderItems; }
-            set
-            {
-                this.folderItems = value;
-            }
-        }
-
-        public override void InitFolder(string path, string fileParent = "")
-        {
-            MainWindow.mainWindow.selectedItems.Clear();
-            if (path == "/Google Drive/Trash")
-            {
-                InitTrash();
-            }
-            else
-            {
-                MainWindow.mainWindow.ChangeVisibilityOfProgressBar(Visibility.Collapsed);
-                MainWindow.mainWindow.previousPath = MainWindow.mainWindow.CurrentPath;
-                MainWindow.mainWindow.CurrentPath = path;
-                FilesResource.ListRequest listRequest = service.Files.List();
-                listRequest.PageSize = 1000;
-                listRequest.Fields = "nextPageToken, files(id, name, fileExtension, size, modifiedByMeTime, parents)";
-                listRequest.PageToken = null;
-                listRequest.Q = "parents in '" + fileParent + "' and trashed=false";
-                var request = listRequest.Execute();
-                var files = request.Files;
-
-                if (files != null && files.Count > 0)
-                {
-                    FolderItems = new ObservableCollection<Google.Apis.Drive.v3.Data.File>(files);
-                    if (MainWindow.mainWindow.CurrentPath == "/Google Drive")
-                    {
-                        FolderItems.Add(new Google.Apis.Drive.v3.Data.File());
-                        FolderItems[folderItems.Count - 1].Name = "Trash";
-                    }
-                }
-                else
-                {
-                    FolderItems = new ObservableCollection<Google.Apis.Drive.v3.Data.File>();
-                }
-                MainWindow.mainWindow.ChangeVisibilityOfProgressBar(Visibility.Collapsed);
-            }
-
-        }
-
-        public override void InitTrash()
+        private void SetRoot()
         {
             FilesResource.ListRequest listRequest = service.Files.List();
-            listRequest.Q = "trashed=true";
-            listRequest.PageSize = 1000;
-            listRequest.Fields = "nextPageToken, files(id, name, fileExtension, size, modifiedByMeTime)";
-
+            listRequest.PageSize = 1;
+            listRequest.Fields = "nextPageToken, files(id, parents)";
+            listRequest.PageToken = null;
+            listRequest.Q = "parents in 'root' and trashed=false";
             var request = listRequest.Execute();
             var files = request.Files;
 
             if (files != null && files.Count > 0)
             {
-                FolderItems = new ObservableCollection<Google.Apis.Drive.v3.Data.File>(files);
+                root = files[0].Parents[0];
             }
-            else
-            {
-                var file = new Google.Apis.Drive.v3.Data.File();
-                FolderItems = new ObservableCollection<Google.Apis.Drive.v3.Data.File>();
-                FolderItems.Add(file);
-            }
-            MainWindow.mainWindow.previousPath = MainWindow.mainWindow.CurrentPath;
-            MainWindow.mainWindow.CurrentPath = "/Google Drive/Trash";
-            MainWindow.mainWindow.ChangeVisibilityOfProgressBar(Visibility.Collapsed);
         }
-
         public override void DownloadFile(string name, string id)
         {
             var saveDialog = new SaveFileDialog()
@@ -150,7 +99,7 @@ namespace Cloud_Manager
             };
             if (saveDialog.ShowDialog() == true)
             {
-                downloadFileName = saveDialog.FileName;
+                string downloadFileName = saveDialog.FileName;
                 var request = service.Files.Get(id);
                 var stream = new MemoryStream();
 
@@ -161,7 +110,6 @@ namespace Cloud_Manager
                         {
                             case DownloadStatus.Downloading:
                                 {
-                                    MainWindow.mainWindow.ChangeVisibilityOfProgressBar(Visibility.Visible);
                                     break;
                                 }
                             case DownloadStatus.Completed:
@@ -170,7 +118,6 @@ namespace Cloud_Manager
                                     {
                                         stream.WriteTo(file);
                                     }
-                                    MainWindow.mainWindow.ChangeVisibilityOfProgressBar(Visibility.Collapsed);
                                     break;
                                 }
                             case DownloadStatus.Failed:
@@ -182,11 +129,9 @@ namespace Cloud_Manager
                     };
                 request.DownloadAsync(stream);
             }
-            else
-                MainWindow.mainWindow.ChangeVisibilityOfProgressBar(Visibility.Collapsed);
         }
 
-        public override void UploadFile()
+        public override void UploadFile(FileStructure curDir)
         {
             var openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "All files (*.*)|*.*";
@@ -203,7 +148,7 @@ namespace Cloud_Manager
                 var file = new Google.Apis.Drive.v3.Data.File()
                 {
                     Name = shortFileName,
-                    Parents = folderItems[0].Parents,
+                    Parents = FolderItems[0].Parents,
 
                 };
 
@@ -218,13 +163,9 @@ namespace Cloud_Manager
                 }
 
             }
-            else
-            {
-                MainWindow.mainWindow.ChangeVisibilityOfProgressBar(Visibility.Collapsed);
-            }
         }
 
-        public override void PasteFiles(ICollection<FileStructure> cutFiles)
+        public override void PasteFiles(ICollection<FileStructure> cutFiles, FileStructure curDir)
         {
             FilesResource.UpdateRequest updateRequest;
             if (cutFiles.Count > 0)
@@ -291,6 +232,39 @@ namespace Cloud_Manager
                 Name = newName
             };
             service.Files.Update(file, selectedFiles.First<FileStructure>().Id).Execute();
+        }
+
+        public override ObservableCollection<FileStructure> GetFiles()
+        {
+            FilesResource.ListRequest listRequest = service.Files.List();
+            listRequest.PageSize = 1000;
+            listRequest.Fields = "nextPageToken, files(id, name, fileExtension, size, modifiedByMeTime, parents, trashed, ownedByMe)";
+            listRequest.PageToken = null;
+            
+            
+            var request = listRequest.Execute();
+            var files = request.Files;
+
+            ObservableCollection<Google.Apis.Drive.v3.Data.File> fileList;
+            if (files != null && files.Count > 0)
+            {
+                fileList = new ObservableCollection<Google.Apis.Drive.v3.Data.File>();
+                foreach (var item in files)
+                {
+                    if (item.Parents != null && item.OwnedByMe==true) 
+                        fileList.Add(item);
+                }
+                if (MainWindow.mainWindow.CurrentPath == "/Google Drive")
+                {
+                    fileList.Add(new Google.Apis.Drive.v3.Data.File());
+                    fileList[fileList.Count - 1].Name = "Trash";
+                }
+            }
+            else
+            {
+                fileList = new ObservableCollection<Google.Apis.Drive.v3.Data.File>();
+            }
+            return FileStructure.Convert(fileList);
         }
     }
 }

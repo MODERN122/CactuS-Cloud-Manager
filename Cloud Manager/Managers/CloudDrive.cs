@@ -21,26 +21,21 @@ using System.Threading;
 
 using Microsoft.Win32;
 
-namespace Cloud_Manager
+namespace Cloud_Manager.Managers
 {
-    abstract class CloudDrive
+    public abstract class CloudDrive
     {
-        protected static string downloadFileName;
-
-        protected ObservableCollection<object> folderItems;
-        public abstract void InitFolder(string path, string parent="");
-        public abstract void InitTrash();
         public abstract void DownloadFile(string name, string id);
-        public abstract void UploadFile();
-        public abstract void PasteFiles(ICollection<FileStructure> cutFiles);
+        public abstract void UploadFile(FileStructure curDir);
+        public abstract void PasteFiles(ICollection<FileStructure> cutFiles, FileStructure curDir);
         public abstract void CreateFolder(string name);
         public abstract void RemoveFile(ICollection<FileStructure> selectedFiles);
         public abstract void TrashFile(ICollection<FileStructure> selectedFiles);
         public abstract void UnTrashFile(ICollection<FileStructure> selectedFiles);
         public abstract void ClearTrash();
         public abstract void RenameFile(ICollection<FileStructure> selectedFiles, string newName);
+        public abstract ObservableCollection<FileStructure> GetFiles();
 
 
-        public virtual ObservableCollection<Object> FolderItems { get; set; }
     }
 }

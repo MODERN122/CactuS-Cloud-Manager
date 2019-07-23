@@ -28,14 +28,13 @@ using Microsoft.Win32;
 using Dropbox.Api;
 using Dropbox.Api.Files;
 
-namespace Cloud_Manager
+namespace Cloud_Manager.Managers
 {
     class DropboxManager : CloudDrive
     {
         static DropboxClient dbx;
 
-        static Dropbox.Api.Files.ListFolderResult folderItems;
-                
+
         public DropboxManager()
         {
             using (var stream = new FileStream("dropbox_secret.txt", FileMode.Open, FileAccess.Read))
@@ -44,75 +43,6 @@ namespace Cloud_Manager
                 stream.Read(key, 0, key.Length);
                 dbx = new DropboxClient(Encoding.Default.GetString(key));
             }
-        }
-
-        public Dropbox.Api.Files.ListFolderResult FolderItems
-        {
-            get { return folderItems; }
-            set
-            {
-                folderItems = value;
-            }
-        }
-
-        async Task ListRootFolder()
-        {
-            FolderItems = await dbx.Files.ListFolderAsync(string.Empty);
-            if (FolderItems.Entries.Count == 0)
-            {
-                FolderItems.Entries.Add(new Dropbox.Api.Files.Metadata { });
-            }
-
-        }
-
-        async Task ListFolder(string path)
-        {
-            FolderItems = await dbx.Files.ListFolderAsync(path);
-        }
-
-        async Task ListTrashFolder()
-        {
-            //var items = await dbx.Files.ListFolderAsync(string.Empty, true, true, true);
-            //FolderItems = new Dropbox.Api.Files.ListFolderResult();
-            //foreach(var item in items.Entries)
-            //{
-            //    if(item.IsDeleted==true)
-            //    {
-            //        FolderItems.Entries.Add(item);
-            //    }
-            //}
-
-
-            // It shows deleted files, not files in trash
-            // There is no access to trash from .NET API
-        }
-
-        public override void InitFolder(string path, string parent = "")
-        {
-            MainWindow.mainWindow.previousPath = MainWindow.mainWindow.CurrentPath;
-            MainWindow.mainWindow.CurrentPath = path;
-            if (parent == "root" || path == "/Dropbox")
-            {
-                var task = Task.Run(this.ListRootFolder);
-                task.Wait();
-            }
-            else if (path == "/Dropbox/Trash")
-            {
-                InitTrash();
-            }
-            else
-            {
-                path = path.Substring(path.IndexOf("/") + 1);
-                path = path.Substring(path.IndexOf("/"));
-                var task = Task.Run(() => this.ListFolder(path));
-                task.Wait();
-            }
-        }
-
-        public override void InitTrash()
-        {
-            var task = Task.Run(this.ListTrashFolder);
-            task.Wait();
         }
 
         static async Task Download(string name, string id)
@@ -127,7 +57,7 @@ namespace Cloud_Manager
                         var s = response.GetContentAsByteArrayAsync();
                         s.Wait();
                         var d = s.Result;
-                        File.WriteAllBytes(downloadFileName, d);
+                        File.WriteAllBytes(name, d);
                     }
 
                 }
@@ -143,12 +73,10 @@ namespace Cloud_Manager
             };
             if (saveDialog.ShowDialog() == true)
             {
-                downloadFileName = saveDialog.FileName;
-                var task = Task.Run(() => Download(name, id));
+                string downloadFileName = saveDialog.FileName;
+                var task = Task.Run(() => Download(downloadFileName, id));
                 task.Wait();
             }
-            else
-                MainWindow.mainWindow.ChangeVisibilityOfProgressBar(Visibility.Collapsed);
         }
 
         static async Task Upload(string file, string content)
@@ -156,24 +84,15 @@ namespace Cloud_Manager
             using (var mem = new MemoryStream(File.ReadAllBytes(content)))
             {
                 string path = MainWindow.mainWindow.CurrentPath;
-                if (path != "/Dropbox")
-                {
-                    path = path.Substring(path.IndexOf("/") + 1);
-                    path = path.Substring(path.IndexOf("/") + 1);
-                }
-                else
-                {
-                    path = "";
-                }
 
                 var updated = await dbx.Files.UploadAsync(
-                    path + "/" + file,
+                    file,
                     WriteMode.Overwrite.Instance,
                     body: mem);
             }
         }
 
-        public override void UploadFile()
+        public override void UploadFile(FileStructure curDir)
         {
             var openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "All files (*.*)|*.*";
@@ -185,27 +104,18 @@ namespace Cloud_Manager
                 RegistryKey regKey = Registry.ClassesRoot.OpenSubKey(ext);
                 if (regKey != null && regKey.GetValue("Content Type") != null)
                     mimeType = regKey.GetValue("Content Type").ToString();
-                string shortFileName = openFileDialog.FileName;
-                shortFileName = shortFileName.Substring(shortFileName.LastIndexOf('\\', shortFileName.Length - 2) + 1);
-                var task = Task.Run(() => Upload(shortFileName, openFileDialog.FileName));
+                string fileName = openFileDialog.FileName;
+                fileName = fileName.Substring(fileName.LastIndexOf('\\', fileName.Length - 2) + 1);
+                fileName = curDir.Path + '/' + fileName;
+                var task = Task.Run(() => Upload(fileName, openFileDialog.FileName)); ;
                 task.Wait();
-            }
-            else
-            {
-                MainWindow.mainWindow.ChangeVisibilityOfProgressBar(Visibility.Collapsed);
             }
         }
 
-        public override void PasteFiles(ICollection<FileStructure> cutFiles)
+        public override void PasteFiles(ICollection<FileStructure> cutFiles, FileStructure curDir)
         {
-            string path = MainWindow.mainWindow.CurrentPath;
-            if (path == "/Dropbox")
-                path = "";
-            else
-            {
-                path = path.Substring(path.IndexOf("/") + 1);
-                path = path.Substring(path.IndexOf("/"));
-            }
+            string path = curDir.Path;
+
             var list = dbx.Files.ListFolderAsync(string.Empty, true).Result;
             foreach (var item in cutFiles)
             {
@@ -271,7 +181,7 @@ namespace Cloud_Manager
                 {
                     var path = listItem.PathDisplay;
                     path = path.Substring(0, path.LastIndexOf("/"));
-                    if(listItem.Name.IndexOf('.')>=0)
+                    if (listItem.Name.IndexOf('.') >= 0)
                         newName += listItem.Name.Substring(listItem.Name.LastIndexOf('.'));
                     dbx.Files.MoveV2Async(listItem.PathDisplay, path + "/" + newName);
                 }
@@ -279,5 +189,56 @@ namespace Cloud_Manager
             MainWindow.mainWindow.cutItems.Clear();
         }
 
+
+        public override ObservableCollection<FileStructure> GetFiles()
+        {
+            var task = Task.Run(() => this.GetFolderFiles());
+            task.Wait();
+            var files = new List<Metadata>(folderResult);
+            var allFiles = new List<Metadata>(files);
+            foreach (var item in files)
+            {
+                if (item.IsFolder)
+                {
+                    var subDirFiles = GetSubDirFiles(item);
+                    foreach (var subDirItem in subDirFiles)
+                    {
+                        allFiles.Add(subDirItem);
+                    }
+                }
+            }
+
+            return FileStructure.Convert(allFiles);
+        }
+
+        private List<Metadata> GetSubDirFiles(Metadata dir)
+        {
+            var task = Task.Run(() => this.GetFolderFiles(dir.PathDisplay));
+            task.Wait();
+            var files = new List<Metadata>(folderResult);
+            var allInnerFiles = new List<Metadata>(files);
+            foreach (var item in files)
+            {
+                if (item.IsFolder)
+                {
+                    var subDirFiles = new List<Metadata>(GetSubDirFiles(item));
+                    foreach (var subDirItem in subDirFiles)
+                    {
+                        allInnerFiles.Add(subDirItem);
+                    }
+                }
+
+            }
+
+            return allInnerFiles;
+        }
+
+        List<Metadata> folderResult;
+
+        private async Task GetFolderFiles(string path = "")
+        {
+            ListFolderResult result = await dbx.Files.ListFolderAsync(path);
+            folderResult = new List<Metadata>(result.Entries);
+        }
     }
 }
