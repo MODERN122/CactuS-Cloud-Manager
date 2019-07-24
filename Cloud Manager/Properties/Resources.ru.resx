@@ -118,69 +118,69 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="BackButton" xml:space="preserve">
-    <value>Back</value>
+    <value>Назад</value>
   </data>
   <data name="ClrTrashButton" xml:space="preserve">
-    <value>Clr Trash</value>
+    <value>Оч. корзину</value>
   </data>
   <data name="CreateButton" xml:space="preserve">
-    <value>Create</value>
+    <value>Создать</value>
   </data>
   <data name="CutButton" xml:space="preserve">
-    <value>Cut</value>
+    <value>Вырезать</value>
   </data>
   <data name="DownloadButton" xml:space="preserve">
-    <value>Download</value>
+    <value>Скачать</value>
   </data>
   <data name="GoUpButton" xml:space="preserve">
-    <value>Go Up</value>
+    <value>Вверх</value>
   </data>
   <data name="HomeButton" xml:space="preserve">
-    <value>Home</value>
+    <value>Домой</value>
   </data>
   <data name="MakeDirButton" xml:space="preserve">
-    <value>Make Dir</value>
+    <value>Созд. папку</value>
   </data>
   <data name="NewFolderNameTextBox" xml:space="preserve">
-    <value>NewFolder</value>
+    <value>НоваяПапка</value>
   </data>
   <data name="PasteButton" xml:space="preserve">
-    <value>Paste</value>
+    <value>Вставить</value>
   </data>
   <data name="RefreshButton" xml:space="preserve">
-    <value>Refresh</value>
+    <value>Обновить</value>
   </data>
   <data name="RemoveButton" xml:space="preserve">
-    <value>Remove</value>
+    <value>Удалить</value>
   </data>
   <data name="RenameButton" xml:space="preserve">
-    <value>Rename</value>
+    <value>Переименовать</value>
   </data>
   <data name="RenamedFilenameTextBox" xml:space="preserve">
-    <value>RenamedFile</value>
+    <value>ПереименованныйФайл</value>
   </data>
   <data name="RenameEnterButton" xml:space="preserve">
-    <value>Rename file</value>
+    <value>Переимен.</value>
   </data>
   <data name="TrashButton" xml:space="preserve">
-    <value>Trash</value>
+    <value>В корзину</value>
   </data>
   <data name="UntrashButton" xml:space="preserve">
-    <value>Untrash</value>
+    <value>Из корзины</value>
   </data>
   <data name="UploadButton" xml:space="preserve">
-    <value>Upload</value>
+    <value>Загрузить</value>
   </data>
   <data name="DateHeader" xml:space="preserve">
-    <value>Date</value>
+    <value>Дата изменения</value>
   </data>
   <data name="NameHeader" xml:space="preserve">
-    <value>Name</value>
+    <value>Имя файла</value>
   </data>
   <data name="SizeHeader" xml:space="preserve">
-    <value>Size</value>
+    <value>Размер файла</value>
   </data>
   <data name="TypeHeader" xml:space="preserve">
-    <value>Type</value>
+    <value>Тип файла</value>
   </data>
 </root>
