@@ -133,6 +133,15 @@ namespace Cloud_Manager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Language.
+        /// </summary>
+        public static string LanguageMenuItem {
+            get {
+                return ResourceManager.GetString("LanguageMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Make Dir.
         /// </summary>
         public static string MakeDirButton {
@@ -156,6 +165,15 @@ namespace Cloud_Manager.Properties {
         public static string NewFolderNameTextBox {
             get {
                 return ResourceManager.GetString("NewFolderNameTextBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options.
+        /// </summary>
+        public static string OptionsMenu {
+            get {
+                return ResourceManager.GetString("OptionsMenu", resourceCulture);
             }
         }
         

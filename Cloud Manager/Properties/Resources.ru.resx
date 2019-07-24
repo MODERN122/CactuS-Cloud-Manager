@@ -183,4 +183,10 @@
   <data name="TypeHeader" xml:space="preserve">
     <value>Тип файла</value>
   </data>
+  <data name="LanguageMenuItem" xml:space="preserve">
+    <value>Язык</value>
+  </data>
+  <data name="OptionsMenu" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
 </root>
