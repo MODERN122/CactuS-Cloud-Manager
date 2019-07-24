@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 using Cloud_Manager.Managers;
+using System.IO;
 
 namespace Cloud_Manager
 {
@@ -21,7 +22,7 @@ namespace Cloud_Manager
 
         public readonly ICollection<FileStructure> selectedItems = new Collection<FileStructure>();
         public readonly ICollection<FileStructure> cutItems = new Collection<FileStructure>();
-        
+
         public string downloadFileName;
 
         public static MainWindow mainWindow;
@@ -108,6 +109,7 @@ namespace Cloud_Manager
 
         public MainWindow()
         {
+            SetLanguageSettings();
             InitializeComponent();
             this.DataContext = this;
             CurrentPath = "/";
@@ -119,6 +121,90 @@ namespace Cloud_Manager
             cloudsList.Add(new CloudInfo("Dropbox", new DropboxManager()));
 
             InitStartFolder();
+        }
+
+        void SetLanguageSettings()
+        {
+            if (File.Exists("config.ini"))
+            {
+                using (FileStream stream = File.OpenRead("config.ini"))
+                {
+                    byte[] array = new byte[stream.Length];
+                    stream.Read(array, 0, array.Length);
+                    string textFromFile = System.Text.Encoding.Default.GetString(array);
+
+                    textFromFile.Replace("\r", "");
+                    var stringsFromFile = textFromFile.Split('\n');
+
+                    foreach (var item in stringsFromFile)
+                    {
+                        if (item == "LanguageAuto=0")
+                        {
+                            foreach (var subItem in stringsFromFile)
+                            {
+                                if (subItem.Contains("CurrentLanguage="))
+                                {
+                                    string tmp = subItem.Substring(16);
+                                    System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo(tmp);
+                                    return;
+                                }
+                            }
+                        }
+                        if (item == "LanguageAuto=1")
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+            ChangeConfigFile();
+        }
+
+        void ChangeConfigFile(string value = "")
+        {
+            if (!File.Exists("config.ini"))
+            {
+                CreateDefaultConfig();
+            }
+            switch (value)
+            {
+                case "en-US":
+                    {
+                        string text = "[Language]\nLanguageAuto=0\nCurrentLanguage=en-US";
+                        using (FileStream stream = new FileStream("config.ini", FileMode.Create))
+                        {
+                            var array = System.Text.Encoding.Default.GetBytes(text);
+                            stream.Write(array, 0, array.Length);
+                        }
+                        break;
+                    }
+                case "ru-RU":
+                    {
+                        string text = "[Language]\nLanguageAuto=0\nCurrentLanguage=ru-RU";
+                        using (FileStream stream = new FileStream("config.ini", FileMode.Create))
+                        {
+                            var array = System.Text.Encoding.Default.GetBytes(text);
+                            stream.Write(array, 0, array.Length);
+                        }
+                        break;
+                    }
+                default:
+                    {
+                        CreateDefaultConfig();
+                        break;
+                    }
+            }
+
+        }
+
+        private void CreateDefaultConfig()
+        {
+            string text = "[Language]\nLanguageAuto=1";
+            using (FileStream stream = new FileStream("config.ini", FileMode.Create))
+            {
+                var array = System.Text.Encoding.Default.GetBytes(text);
+                stream.Write(array, 0, array.Length);
+            }
         }
 
         public virtual void OnPropertyChanged(string propertyName)
@@ -143,19 +229,19 @@ namespace Cloud_Manager
 
         private void refresh_Click(object sender, RoutedEventArgs e)
         {
-            if(CurrentPath == "/")
+            if (CurrentPath == "/")
             {
                 InitStartFolder();
             }
             else
             {
-                foreach(var item in cloudsList)
+                foreach (var item in cloudsList)
                 {
                     currentCloudInfo.Files = currentCloudInfo.Cloud.GetFiles();
                     FolderItems = currentCloudInfo.GetFilesInCurrentDir();
                     break;
                 }
-            }            
+            }
         }
 
         private void goUp_Click(object sender, RoutedEventArgs e)
@@ -180,7 +266,7 @@ namespace Cloud_Manager
             {
                 PreviousPath = CurrentPath;
                 CurrentPath = CurrentPath.Substring(0, CurrentPath.Length - currentCloudInfo.CurrentDir.Name.Length - 1);
-                if(CurrentPath == '/' + currentCloudInfo.Name)
+                if (CurrentPath == '/' + currentCloudInfo.Name)
                 {
                     currentCloudInfo.CurrentDir = new FileStructure() { Name = "Root" };
                     FolderItems = currentCloudInfo.GetFilesInCurrentDir();
@@ -236,9 +322,9 @@ namespace Cloud_Manager
                 string path = PreviousPath;
                 path = path.Substring(1); // delete first slash in the path
                 path = path.Substring(path.IndexOf('/')); // delete the name of the current cloud
-                foreach(var item in currentCloudInfo.Files)
+                foreach (var item in currentCloudInfo.Files)
                 {
-                    if(item.Path == path)
+                    if (item.Path == path)
                     {
                         currentCloudInfo.CurrentDir = item;
                         FolderItems = currentCloudInfo.GetFilesInCurrentDir();
@@ -337,7 +423,7 @@ namespace Cloud_Manager
             currentCloudInfo.Files = currentCloudInfo.Cloud.GetFiles();
             OnPropertyChanged("FolderItems");
         }
-        
+
 
         private void NotifyMenuItems()
         {
@@ -389,7 +475,7 @@ namespace Cloud_Manager
                     }
                 }
             }
-            else if(item.FileExtension == null)
+            else if (item.FileExtension == null)
             {
                 currentCloudInfo.CurrentDir = item;
                 FolderItems = currentCloudInfo.GetFilesInCurrentDir();
@@ -397,6 +483,23 @@ namespace Cloud_Manager
             PreviousPath = CurrentPath;
             CurrentPath = '/' + currentCloudInfo.Name + currentCloudInfo.CurrentDir.Path;
             NotifyMenuItems();
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            switch (menuItem.Header.ToString())
+            {
+                case "English":
+                    ChangeConfigFile("en-US");
+                    MessageBox.Show("Program will run in English after restart.");
+                    break;
+
+                case "Русский":
+                    ChangeConfigFile("ru-RU");
+                    MessageBox.Show("Программа сменит язык после рестарта.");
+                    break;
+            }
         }
 
     }
