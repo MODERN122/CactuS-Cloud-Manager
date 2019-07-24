@@ -1,22 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
-using System.IO.IsolatedStorage;
-using System.Reflection;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Threading;
 
 using Microsoft.Win32;
@@ -24,7 +10,6 @@ using Microsoft.Win32;
 using Google.Apis.Util.Store;
 using Google.Apis.Services;
 using Google.Apis.Drive.v3;
-using Google.Apis.Drive.v3.Data;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Download;
 
@@ -254,11 +239,7 @@ namespace Cloud_Manager.Managers
                     if (item.Parents != null && item.OwnedByMe==true) 
                         fileList.Add(item);
                 }
-                if (MainWindow.mainWindow.CurrentPath == "/Google Drive")
-                {
-                    fileList.Add(new Google.Apis.Drive.v3.Data.File());
-                    fileList[fileList.Count - 1].Name = "Trash";
-                }
+                fileList.Add(new Google.Apis.Drive.v3.Data.File() { Name = "Trash", Parents = new List<string>() { root }, Trashed = false });
             }
             else
             {
