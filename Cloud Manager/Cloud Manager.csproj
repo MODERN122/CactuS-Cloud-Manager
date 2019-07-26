@@ -131,6 +131,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CloudInfo.cs" />
+    <Compile Include="CloudManagerLogic.cs" />
     <Compile Include="FileStructure.cs" />
     <Compile Include="Managers\CloudDrive.cs" />
     <Compile Include="Converters\ItemSizeConverter.cs" />
