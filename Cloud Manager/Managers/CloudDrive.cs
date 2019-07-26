@@ -23,12 +23,18 @@ using Microsoft.Win32;
 
 namespace Cloud_Manager.Managers
 {
+    enum CloudManagerType
+    {
+        GoogleDrive,
+        Dropbox
+    }
+
     public abstract class CloudDrive
     {
         public abstract void DownloadFile(string name, string id);
         public abstract void UploadFile(FileStructure curDir);
         public abstract void PasteFiles(ICollection<FileStructure> cutFiles, FileStructure curDir);
-        public abstract void CreateFolder(string name);
+        public abstract void CreateFolder(string name, FileStructure parentDir);
         public abstract void RemoveFile(ICollection<FileStructure> selectedFiles);
         public abstract void TrashFile(ICollection<FileStructure> selectedFiles);
         public abstract void UnTrashFile(ICollection<FileStructure> selectedFiles);

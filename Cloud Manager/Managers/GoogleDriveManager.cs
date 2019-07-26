@@ -165,7 +165,7 @@ namespace Cloud_Manager.Managers
             }
         }
 
-        public override void CreateFolder(string name)
+        public override void CreateFolder(string name, FileStructure parentDir)
         {
             string parent = MainWindow.mainWindow.FolderItems[0].Parents[0];
             var fileMetaData = new Google.Apis.Drive.v3.Data.File()

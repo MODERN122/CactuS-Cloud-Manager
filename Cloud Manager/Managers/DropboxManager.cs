@@ -79,11 +79,11 @@ namespace Cloud_Manager.Managers
             }
         }
 
-        static async Task Upload(string file, string content)
+        static async Task Upload(string file, string content, string currentPath)
         {
             using (var mem = new MemoryStream(File.ReadAllBytes(content)))
             {
-                string path = MainWindow.mainWindow.CurrentPath;
+                string path = currentPath;
 
                 var updated = await dbx.Files.UploadAsync(
                     file,
@@ -107,7 +107,7 @@ namespace Cloud_Manager.Managers
                 string fileName = openFileDialog.FileName;
                 fileName = fileName.Substring(fileName.LastIndexOf('\\', fileName.Length - 2) + 1);
                 fileName = curDir.Path + '/' + fileName;
-                var task = Task.Run(() => Upload(fileName, openFileDialog.FileName)); ;
+                var task = Task.Run(() => Upload(fileName, openFileDialog.FileName, curDir.Path)); ;
                 task.Wait();
             }
         }
@@ -127,9 +127,9 @@ namespace Cloud_Manager.Managers
             }
         }
 
-        public override void CreateFolder(string name)
+        public override void CreateFolder(string name, FileStructure parentDir)
         {
-            string path = MainWindow.mainWindow.CurrentPath;
+            string path = parentDir.Path;
             if (path == "/Dropbox")
             {
                 dbx.Files.CreateFolderV2Async("/" + name);
@@ -186,7 +186,6 @@ namespace Cloud_Manager.Managers
                     dbx.Files.MoveV2Async(listItem.PathDisplay, path + "/" + newName);
                 }
             }
-            MainWindow.mainWindow.cutItems.Clear();
         }
 
 
