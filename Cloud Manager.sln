@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29123.88
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cloud Manager", "Cloud Manager\Cloud Manager.csproj", "{A9898B27-8868-47FE-A98D-2540482BC51A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{740C6358-E40A-43CA-8EE3-30BC18EA4F3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{A9898B27-8868-47FE-A98D-2540482BC51A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9898B27-8868-47FE-A98D-2540482BC51A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9898B27-8868-47FE-A98D-2540482BC51A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{740C6358-E40A-43CA-8EE3-30BC18EA4F3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{740C6358-E40A-43CA-8EE3-30BC18EA4F3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{740C6358-E40A-43CA-8EE3-30BC18EA4F3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{740C6358-E40A-43CA-8EE3-30BC18EA4F3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
