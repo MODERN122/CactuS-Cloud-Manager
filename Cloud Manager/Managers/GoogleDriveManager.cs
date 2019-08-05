@@ -43,7 +43,7 @@ namespace Cloud_Manager.Managers
         {
             UserCredential credential; 
 
-            using (var stream = new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
+            using (var stream = new FileStream("client_secret_google.json", FileMode.Open, FileAccess.Read))
             {
                 string credPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
 

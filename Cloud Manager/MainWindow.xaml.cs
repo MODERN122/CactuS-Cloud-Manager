@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 using Cloud_Manager.Managers;
+using Cloud_Manager.Properties;
 
 namespace Cloud_Manager
 {
@@ -75,6 +76,7 @@ namespace Cloud_Manager
 
         public MainWindow()
         {
+            SetOptions();
             _cloudManagerLogic = new CloudManagerLogic();
             InitializeComponent();
             DataContext = this;
@@ -248,15 +250,40 @@ namespace Cloud_Manager
             switch (menuItem.Header.ToString())
             {
                 case "English":
-                    _cloudManagerLogic.ChangeLanguage("en-US");
+                    ChangeLanguage("en-US");
                     MessageBox.Show("Program will run in English after restart.");
                     break;
 
                 case "Русский":
-                    _cloudManagerLogic.ChangeLanguage("ru-RU");
+                    ChangeLanguage("ru-RU");
                     MessageBox.Show("Программа сменит язык после рестарта.");
                     break;
             }
+        }
+
+        private void SetOptions()
+        {
+            if (Settings.Default.Language.Equals(string.Empty))
+            {
+                ChangeLanguage();
+            }
+            else
+            {
+                System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo(Settings.Default.Language);
+            }
+        }
+
+        private void ChangeLanguage(string language = null)
+        {
+            if (language == null)
+            {
+                Settings.Default.Language = System.Threading.Thread.CurrentThread.CurrentUICulture.ToString();
+            }
+            else
+            {
+                Settings.Default.Language = language;
+            }
+            Settings.Default.Save();
         }
 
     }
