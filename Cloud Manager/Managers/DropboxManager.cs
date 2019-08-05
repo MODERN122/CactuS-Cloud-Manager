@@ -1,29 +1,132 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
+using System.Net.Http;
+using System.Runtime.CompilerServices;
+using System.Windows;
+using System.Runtime.InteropServices;
+using System.Windows.Documents;
+using Cloud_Manager.Properties;
 using Microsoft.Win32;
 
 using Dropbox.Api;
 using Dropbox.Api.Files;
+using Dropbox.Api.Common;
+using Dropbox.Api.Team;
+using Newtonsoft.Json.Linq;
 
 namespace Cloud_Manager.Managers
 {
     class DropboxManager : CloudDrive
     {
+        #region Variables
         static DropboxClient _dbx;
+        private string _appKey;
+        private string _loopbackHost;
+        private Uri _redirectUri;
+        private Uri _jsRedirectUri;
+        #endregion
 
-
+        #region Constructor
         public DropboxManager()
         {
-            using (var stream = new FileStream("dropbox_secret.txt", FileMode.Open, FileAccess.Read))
+            GetAppInfo();
+            var task = Task.Run(() => Authorize());
+            task.Wait();
+            _dbx = new DropboxClient(task.Result);
+        }
+        #endregion
+
+        #region Properties
+        #endregion
+
+        private void GetAppInfo()
+        {
+            using (var stream = new FileStream("client_secret_dropbox.json", FileMode.Open, FileAccess.Read))
             {
-                byte[] key = new byte[stream.Length];
-                stream.Read(key, 0, key.Length);
-                _dbx = new DropboxClient(Encoding.Default.GetString(key));
+                byte[] array = new byte[stream.Length];
+                stream.Read(array, 0, array.Length);
+                string textFromFile = System.Text.Encoding.Default.GetString(array);
+                dynamic json = JObject.Parse(textFromFile);
+                _appKey = json.app_key;
+                _loopbackHost = json.loopback_host;
+                _redirectUri = new Uri(_loopbackHost + json.redirect_uri);
+                _jsRedirectUri = new Uri(_loopbackHost + json.js_redirect_uri);
             }
+            
+        }
+
+        public async Task<string> Authorize()
+        {
+            var state = Guid.NewGuid().ToString("N");
+            var authUri = DropboxOAuth2Helper.GetAuthorizeUri(
+                OAuthResponseType.Token,
+                _appKey,
+                _redirectUri,
+                state: state);
+            var http = new HttpListener();
+            http.Prefixes.Add(_loopbackHost);
+            http.Start();
+
+            System.Diagnostics.Process.Start(authUri.ToString());
+
+            await HandleOAuth2Redirect(http);
+
+            // Handle redirect from JS and process OAuth response.
+            var result = await HandleJsRedirect(http);
+
+            if (result.State != state)
+            {
+                // The state in the response doesn't match the state in the request.
+                return null;
+            }
+
+            return result.AccessToken;
+        }
+
+        private async Task HandleOAuth2Redirect(HttpListener http)
+        {
+            var context = await http.GetContextAsync();
+
+            // We only care about request to RedirectUri endpoint.
+            while (context.Request.Url.AbsolutePath != _redirectUri.AbsolutePath)
+            {
+                context = await http.GetContextAsync();
+            }
+
+            // Respond with a HTML page which runs JS to send URl fragment.
+            context.Response.ContentType = "text/html";
+
+            // Respond with a page which runs JS and sends URL fragment as query string
+            // to TokenRedirectUri.
+            using (var file = File.OpenRead("index.html"))
+            {
+                file.CopyTo(context.Response.OutputStream);
+            }
+
+            context.Response.OutputStream.Close();
+        }
+
+        private async Task<OAuth2Response> HandleJsRedirect(HttpListener http)
+        {
+            var context = await http.GetContextAsync();
+
+            // We only care about request to TokenRedirectUri endpoint.
+            while (context.Request.Url.AbsolutePath != _jsRedirectUri.AbsolutePath)
+            {
+                context = await http.GetContextAsync();
+            }
+
+            var redirectUri = new Uri(context.Request.QueryString["url_with_fragment"]);
+
+            var result = DropboxOAuth2Helper.ParseTokenFragment(redirectUri);
+
+            return result;
         }
 
         static async Task Download(string name, string id)
@@ -171,17 +274,16 @@ namespace Cloud_Manager.Managers
         {
             var task = Task.Run(() => this.GetFolderFiles());
             task.Wait();
-            var files = new List<Metadata>(folderResult);
+            var files = task.Result;
             
             return FileStructure.Convert(files);
         }
 
-        List<Metadata> folderResult;
 
-        private async Task GetFolderFiles(string path = "")
+        private async Task<List<Metadata>> GetFolderFiles(string path = "")
         {
             ListFolderResult result = await _dbx.Files.ListFolderAsync(path, true);
-            folderResult = new List<Metadata>(result.Entries);
+            return new List<Metadata>(result.Entries);
         }
     }
 }
