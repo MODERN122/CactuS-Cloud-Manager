@@ -26,29 +26,6 @@
     </Window.Resources>
     <StackPanel HorizontalAlignment="Left" Margin="0">
         <Menu Height="25" VerticalAlignment="Top" Margin="0,0,-696,0" HorizontalAlignment="Left">
-            <MenuItem Header="{x:Static res:Resources.CloudMenu}">
-                <MenuItem Header="{x:Static res:Resources.AddCloudMenuItem}" Click="addCloud_Click"/>
-                <MenuItem Header="{x:Static res:Resources.RenameCloudMenuItem}" Click="renameCloud_Click"/>
-                <MenuItem Header="{x:Static res:Resources.RemoveCloudMenuItem}" Click="removeCloud_Click"/>
-                <Separator/>
-                <MenuItem Header="{x:Static res:Resources.ClrTrashButton}" Click="clearTrash_Click"/>
-
-            </MenuItem>
-            <MenuItem Header="{x:Static res:Resources.FileMenu}">
-                <MenuItem Header="{x:Static res:Resources.DownloadButton}" Click="download_Click"/>
-                <MenuItem Header="{x:Static res:Resources.UploadButton}" Click="upload_Click"/>
-                <Separator/>
-                <MenuItem Header="{x:Static res:Resources.RemoveButton}" Click="remove_Click"/>
-                <MenuItem Header="{x:Static res:Resources.TrashButton}" Click="trash_Click"/>
-                <MenuItem Header="{x:Static res:Resources.UntrashButton}" Click="untrash_Click"/>
-                <Separator/>
-                <MenuItem Header="{x:Static res:Resources.RenameButton}" Click="rename_Click"/>
-            </MenuItem>
-            <MenuItem Header="{x:Static res:Resources.EditMenu}">
-                <MenuItem Header="{x:Static res:Resources.CutButton}" Click="cut_Click"/>
-                <MenuItem Header="{x:Static res:Resources.CopyButton}" Click="copy_Click"/>
-                <MenuItem Header="{x:Static res:Resources.PasteButton}" Click="paste_Click"/>
-            </MenuItem>
             <MenuItem Header="{x:Static res:Resources.OptionsMenu}">
                 <MenuItem Header="{x:Static res:Resources.LanguageMenuItem}">
                     <MenuItem Header="English" Click="MenuItem_Click"/>
@@ -79,18 +56,6 @@
                     <DataGridTextColumn Header="{x:Static res:Resources.SizeHeader}" Width="150" Binding="{Binding Size, Converter={StaticResource itemSizeConverter}}"/>
                     <DataGridTextColumn Header="{x:Static res:Resources.DateHeader}" Width="125" Binding="{Binding ModifiedByMeTime, StringFormat=MM/dd/yyyy hh:mm}"/>
                 </DataGrid.Columns>
-                <DataGrid.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="{x:Static res:Resources.DownloadButton}" Click="download_Click"/>
-                        <MenuItem Header="{x:Static res:Resources.UploadButton}" Click="upload_Click"/>
-                        <Separator/>
-                        <MenuItem Header="{x:Static res:Resources.CutButton}" Click="cut_Click"/>
-                        <MenuItem Header="{x:Static res:Resources.CopyButton}" Click="copy_Click"/>
-                        <MenuItem Header="{x:Static res:Resources.PasteButton}" Click="paste_Click"/>
-                        <Separator/>
-                        <MenuItem Header="{x:Static res:Resources.RenameButton}" Click="rename_Click"/>
-                    </ContextMenu>
-                </DataGrid.ContextMenu>
             </DataGrid>
 
             <DockPanel Grid.Row="2" VerticalAlignment="Bottom">
