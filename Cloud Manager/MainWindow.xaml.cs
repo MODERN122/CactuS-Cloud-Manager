@@ -286,6 +286,25 @@ namespace Cloud_Manager
             Settings.Default.Save();
         }
 
+        private void addCloud_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void renameCloud_Click(object sender, RoutedEventArgs e)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        private void removeCloud_Click(object sender, RoutedEventArgs e)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        private void copy_Click(object sender, RoutedEventArgs e)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
 
