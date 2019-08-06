@@ -61,6 +61,15 @@ namespace Cloud_Manager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Cloud.
+        /// </summary>
+        public static string AddCloudMenuItem {
+            get {
+                return ResourceManager.GetString("AddCloudMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Back.
         /// </summary>
         public static string BackButton {
@@ -70,11 +79,29 @@ namespace Cloud_Manager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cloud.
+        /// </summary>
+        public static string CloudMenu {
+            get {
+                return ResourceManager.GetString("CloudMenu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Clr Trash.
         /// </summary>
         public static string ClrTrashButton {
             get {
                 return ResourceManager.GetString("ClrTrashButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy.
+        /// </summary>
+        public static string CopyButton {
+            get {
+                return ResourceManager.GetString("CopyButton", resourceCulture);
             }
         }
         
@@ -111,6 +138,24 @@ namespace Cloud_Manager.Properties {
         public static string DownloadButton {
             get {
                 return ResourceManager.GetString("DownloadButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit.
+        /// </summary>
+        public static string EditMenu {
+            get {
+                return ResourceManager.GetString("EditMenu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File.
+        /// </summary>
+        public static string FileMenu {
+            get {
+                return ResourceManager.GetString("FileMenu", resourceCulture);
             }
         }
         
@@ -205,11 +250,29 @@ namespace Cloud_Manager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove Cloud.
+        /// </summary>
+        public static string RemoveCloudMenuItem {
+            get {
+                return ResourceManager.GetString("RemoveCloudMenuItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Rename.
         /// </summary>
         public static string RenameButton {
             get {
                 return ResourceManager.GetString("RenameButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rename Cloud.
+        /// </summary>
+        public static string RenameCloudMenuItem {
+            get {
+                return ResourceManager.GetString("RenameCloudMenuItem", resourceCulture);
             }
         }
         

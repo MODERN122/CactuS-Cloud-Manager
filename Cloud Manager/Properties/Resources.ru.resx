@@ -189,4 +189,25 @@
   <data name="OptionsMenu" xml:space="preserve">
     <value>Настройки</value>
   </data>
+  <data name="AddCloudMenuItem" xml:space="preserve">
+    <value>Добавить облако</value>
+  </data>
+  <data name="CloudMenu" xml:space="preserve">
+    <value>Облако</value>
+  </data>
+  <data name="CopyButton" xml:space="preserve">
+    <value>Копировать</value>
+  </data>
+  <data name="EditMenu" xml:space="preserve">
+    <value>Изменить</value>
+  </data>
+  <data name="FileMenu" xml:space="preserve">
+    <value>Файл</value>
+  </data>
+  <data name="RemoveCloudMenuItem" xml:space="preserve">
+    <value>Удалить облако</value>
+  </data>
+  <data name="RenameCloudMenuItem" xml:space="preserve">
+    <value>Переименовать облако</value>
+  </data>
 </root>

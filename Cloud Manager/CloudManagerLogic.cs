@@ -52,6 +52,11 @@ namespace Cloud_Manager
             
         }
 
+        public void RenameCloud(string name, CloudInfo cloud)
+        {
+            cloud.Name = name;
+        }
+
         public void RemoveCloud(string name)
         {
             foreach (var cloud in _cloudList)
