@@ -17,17 +17,19 @@ namespace Cloud_Manager.Managers
 {
     class GoogleDriveManager : CloudDrive
     {
-        static string[] Scopes = { DriveService.Scope.Drive };
+        static readonly string[] Scopes = { DriveService.Scope.Drive };
 
         public DriveService service;
         private UserCredential credential;
+        private string _pathName;
 
         public static string root = "";
 
         public ObservableCollection<Google.Apis.Drive.v3.Data.File> FolderItems { get; set; }
 
-        public GoogleDriveManager()
+        public GoogleDriveManager(string name)
         {
+            _pathName = "profile\\" + name + ".token_response";
             credential = GetCredentials();
 
             service = new DriveService(new BaseClientService.Initializer()
@@ -39,23 +41,19 @@ namespace Cloud_Manager.Managers
             SetRoot();
         }
 
-        private static UserCredential GetCredentials()
-        {
-            UserCredential credential; 
 
+        private UserCredential GetCredentials()
+        {
             using (var stream = new FileStream("client_secret_google.json", FileMode.Open, FileAccess.Read))
             {
-                string credPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal);
-
-                credPath = System.IO.Path.Combine(credPath, ".credentials/drive-dotnet-quickstart.json");
-
                 credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                     GoogleClientSecrets.Load(stream).Secrets,
                     Scopes,
                     "user",
-                    CancellationToken.None,
-                    new FileDataStore(credPath, true)).Result;
+                    CancellationToken.None, 
+                    new FileDataStore(_pathName, true)).Result;
             }
+            
 
             return credential;
         }

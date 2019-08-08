@@ -1,23 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using System.Net.Http;
-using System.Runtime.CompilerServices;
-using System.Windows;
-using System.Runtime.InteropServices;
-using System.Windows.Documents;
-using Cloud_Manager.Properties;
 using Microsoft.Win32;
 
 using Dropbox.Api;
 using Dropbox.Api.Files;
-using Dropbox.Api.Common;
-using Dropbox.Api.Team;
 using Newtonsoft.Json.Linq;
 
 namespace Cloud_Manager.Managers
@@ -26,6 +17,7 @@ namespace Cloud_Manager.Managers
     {
         #region Variables
         static DropboxClient _dbx;
+        private string _pathName;
         private string _appKey;
         private string _loopbackHost;
         private Uri _redirectUri;
@@ -33,17 +25,50 @@ namespace Cloud_Manager.Managers
         #endregion
 
         #region Constructor
-        public DropboxManager()
+        public DropboxManager(string name)
         {
             GetAppInfo();
-            var task = Task.Run(() => Authorize());
-            task.Wait();
-            _dbx = new DropboxClient(task.Result);
+            _pathName = "profile\\" + name + ".token_response";
+            if (File.Exists(_pathName))
+                GetCredentials();
+            else
+            {
+                var task = Task.Run(() => Authorize());
+                task.Wait();
+                SaveCredentials(task.Result);
+                _dbx = new DropboxClient(task.Result);
+                
+            }
+ 
         }
         #endregion
 
         #region Properties
         #endregion
+
+        private void SaveCredentials(string token)
+        {
+            using (var stream = new FileStream(_pathName, FileMode.Create)) 
+            {
+                string cred = "{\"token\" : \"" + token + "\"}";
+
+                byte[] array = System.Text.Encoding.Default.GetBytes(cred);
+                stream.Write(array, 0, array.Length);
+            }
+        }
+
+        private void GetCredentials()
+        {
+            using (var stream = new FileStream(_pathName, FileMode.Open, FileAccess.Read))
+            {
+                byte[] array = new byte[stream.Length];
+                stream.Read(array, 0, array.Length);
+                string text = System.Text.Encoding.Default.GetString(array);
+                dynamic json = JObject.Parse(text);
+                string token = json.token;
+                _dbx = new DropboxClient(token);
+            }
+        }
 
         private void GetAppInfo()
         {

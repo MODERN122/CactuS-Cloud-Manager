@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -31,114 +32,46 @@ namespace Cloud_Manager
 
         public CloudManagerLogic()
         {
-            //SetLanguageSettings();
             _cloudList = new List<CloudInfo>();
+            GetInfo();
 
             CurrentPath = "/";
             PreviousPath = "/";
         }
-
-        //private void SetLanguageSettings()
-        //{
-        //    if (File.Exists("config.ini"))
-        //    {
-        //        using (FileStream stream = File.OpenRead("config.ini"))
-        //        {
-        //            byte[] array = new byte[stream.Length];
-        //            stream.Read(array, 0, array.Length);
-        //            string textFromFile = System.Text.Encoding.Default.GetString(array);
-
-        //            textFromFile = textFromFile.Replace("\r", "");
-        //            var stringsFromFile = textFromFile.Split('\n');
-
-        //            foreach (var item in stringsFromFile)
-        //            {
-        //                if (item == "LanguageAuto=0")
-        //                {
-        //                    foreach (var subItem in stringsFromFile)
-        //                    {
-        //                        if (subItem.Contains("CurrentLanguage="))
-        //                        {
-        //                            string tmp = subItem.Substring(16);
-        //                            System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo(tmp);
-        //                            return;
-        //                        }
-        //                    }
-        //                }
-        //                if (item == "LanguageAuto=1")
-        //                {
-        //                    return;
-        //                }
-        //            }
-        //        }
-        //    }
-        //    ChangeConfigFile();
-        //}
-
-        //private void ChangeConfigFile(string value="")
-        //{
-        //    if (!File.Exists("config.ini"))
-        //    {
-        //        CreateDefaultConfig();
-        //    }
-        //    switch (value)
-        //    {
-        //        case "en-US":
-        //        {
-        //            string text = "[Language]\nLanguageAuto=0\nCurrentLanguage=en-US";
-        //            using (FileStream stream = new FileStream("config.ini", FileMode.Create))
-        //            {
-        //                var array = System.Text.Encoding.Default.GetBytes(text);
-        //                stream.Write(array, 0, array.Length);
-        //            }
-        //            break;
-        //        }
-        //        case "ru-RU":
-        //        {
-        //            string text = "[Language]\nLanguageAuto=0\nCurrentLanguage=ru-RU";
-        //            using (FileStream stream = new FileStream("config.ini", FileMode.Create))
-        //            {
-        //                var array = System.Text.Encoding.Default.GetBytes(text);
-        //                stream.Write(array, 0, array.Length);
-        //            }
-        //            break;
-        //        }
-        //        default:
-        //        {
-        //            CreateDefaultConfig();
-        //            break;
-        //        }
-        //    }
-        //}
-
-        //public void ChangeLanguage(string language)
-        //{
-        //    ChangeConfigFile(language);
-        //}
-
-        //private void CreateDefaultConfig()
-        //{
-        //    string text = "[Language]\nLanguageAuto=1";
-        //    using (FileStream stream = new FileStream("config.ini", FileMode.Create))
-        //    {
-        //        var array = System.Text.Encoding.Default.GetBytes(text);
-        //        stream.Write(array, 0, array.Length);
-        //    }
-        //}
 
         public void AddCloud(string name, CloudManagerType type)
         {
             switch (type)
             {
                 case CloudManagerType.GoogleDrive:
-                    _cloudList.Add(new CloudInfo(name, new GoogleDriveManager()));
+                    _cloudList.Add(new CloudInfo(name, new GoogleDriveManager(name)));
                     break;
 
                 case CloudManagerType.Dropbox:
-                    _cloudList.Add(new CloudInfo(name, new DropboxManager()));
+                    _cloudList.Add(new CloudInfo(name, new DropboxManager(name)));
                     break;
             }
             
+        }
+
+        public void AddCloud(string nameAndType)
+        {
+            string[] splited = nameAndType.Split(':');
+            switch (splited[1])
+            {
+                case "Cloud_Manager.Managers.GoogleDriveManager":
+                    _cloudList.Add(new CloudInfo(splited[0], new GoogleDriveManager(splited[0])));
+                    break;
+
+                case "Cloud_Manager.Managers.DropboxManager":
+                    _cloudList.Add(new CloudInfo(splited[0], new DropboxManager(splited[0])));
+                    break;
+            }
+        }
+
+        public void RenameCloud(string name, CloudInfo cloud)
+        {
+            cloud.Name = name;
         }
 
         public void RemoveCloud(string name)
@@ -367,6 +300,36 @@ namespace Cloud_Manager
             }
 
             return null;
+        }
+
+        public void SaveInfo()
+        {
+            using (var stream = new FileStream("profile\\clouds.data", FileMode.Create))
+            {
+                foreach (var cloud in _cloudList)
+                {
+                    byte[] array = System.Text.Encoding.Default.GetBytes(cloud.Name+':'+cloud.Cloud+',');
+                    stream.Write(array, 0, array.Length);
+                }
+            }
+        }
+
+        public void GetInfo()
+        {
+            string[] textArray;
+            using (var stream = new FileStream("profile\\clouds.data", FileMode.Open, FileAccess.Read))
+            {
+                byte[] array = new byte[stream.Length];
+                stream.Read(array, 0, array.Length);
+                string textFromFile = System.Text.Encoding.Default.GetString(array);
+                textArray = textFromFile.Split(new char[]{','}, StringSplitOptions.RemoveEmptyEntries);
+
+            }
+
+            foreach (var item in textArray)
+            {
+                AddCloud(item);
+            }
         }
     }
 }

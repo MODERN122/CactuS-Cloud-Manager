@@ -4,8 +4,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-
-using Cloud_Manager.Managers;
 using Cloud_Manager.Properties;
 
 namespace Cloud_Manager
@@ -82,9 +80,6 @@ namespace Cloud_Manager
             DataContext = this;
             OnPropertyChanged("WindowTitle");
             mainWindow = this;
-
-            _cloudManagerLogic.AddCloud("GoogleDrive", CloudManagerType.GoogleDrive);
-            _cloudManagerLogic.AddCloud("Dropbox", CloudManagerType.Dropbox);
 
             FolderItems = _cloudManagerLogic.InitStartFolder();
         }
@@ -286,6 +281,30 @@ namespace Cloud_Manager
             Settings.Default.Save();
         }
 
+        private void addCloud_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void renameCloud_Click(object sender, RoutedEventArgs e)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        private void removeCloud_Click(object sender, RoutedEventArgs e)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        private void copy_Click(object sender, RoutedEventArgs e)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        private void MainWindow_Closing(object sender, CancelEventArgs cancelEventArgs)
+        {
+            _cloudManagerLogic.SaveInfo();
+        }
     }
 }
 
