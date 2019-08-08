@@ -7,7 +7,8 @@
         xmlns:local="clr-namespace:Cloud_Manager"
         xmlns:res="clr-namespace:Cloud_Manager.Properties"
         mc:Ignorable="d"
-        Title="{Binding WindowTitle}" Height="485" Width="800">
+        Title="{Binding WindowTitle}" Height="485" Width="800"
+        Closing="MainWindow_Closing">
     <Window.Resources>
         <converters:ItemSizeConverter x:Key="itemSizeConverter"/>
 

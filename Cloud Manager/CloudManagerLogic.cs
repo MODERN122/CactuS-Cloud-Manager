@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -32,6 +33,7 @@ namespace Cloud_Manager
         public CloudManagerLogic()
         {
             _cloudList = new List<CloudInfo>();
+            GetInfo();
 
             CurrentPath = "/";
             PreviousPath = "/";
@@ -42,14 +44,29 @@ namespace Cloud_Manager
             switch (type)
             {
                 case CloudManagerType.GoogleDrive:
-                    _cloudList.Add(new CloudInfo(name, new GoogleDriveManager()));
+                    _cloudList.Add(new CloudInfo(name, new GoogleDriveManager(name)));
                     break;
 
                 case CloudManagerType.Dropbox:
-                    _cloudList.Add(new CloudInfo(name, new DropboxManager()));
+                    _cloudList.Add(new CloudInfo(name, new DropboxManager(name)));
                     break;
             }
             
+        }
+
+        public void AddCloud(string nameAndType)
+        {
+            string[] splited = nameAndType.Split(':');
+            switch (splited[1])
+            {
+                case "Cloud_Manager.Managers.GoogleDriveManager":
+                    _cloudList.Add(new CloudInfo(splited[0], new GoogleDriveManager(splited[0])));
+                    break;
+
+                case "Cloud_Manager.Managers.DropboxManager":
+                    _cloudList.Add(new CloudInfo(splited[0], new DropboxManager(splited[0])));
+                    break;
+            }
         }
 
         public void RenameCloud(string name, CloudInfo cloud)
@@ -283,6 +300,36 @@ namespace Cloud_Manager
             }
 
             return null;
+        }
+
+        public void SaveInfo()
+        {
+            using (var stream = new FileStream("profile\\clouds.data", FileMode.Create))
+            {
+                foreach (var cloud in _cloudList)
+                {
+                    byte[] array = System.Text.Encoding.Default.GetBytes(cloud.Name+':'+cloud.Cloud+',');
+                    stream.Write(array, 0, array.Length);
+                }
+            }
+        }
+
+        public void GetInfo()
+        {
+            string[] textArray;
+            using (var stream = new FileStream("profile\\clouds.data", FileMode.Open, FileAccess.Read))
+            {
+                byte[] array = new byte[stream.Length];
+                stream.Read(array, 0, array.Length);
+                string textFromFile = System.Text.Encoding.Default.GetString(array);
+                textArray = textFromFile.Split(new char[]{','}, StringSplitOptions.RemoveEmptyEntries);
+
+            }
+
+            foreach (var item in textArray)
+            {
+                AddCloud(item);
+            }
         }
     }
 }
