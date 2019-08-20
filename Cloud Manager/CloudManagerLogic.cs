@@ -30,6 +30,9 @@ namespace Cloud_Manager
 
         public string PreviousPath { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <c>CloudManagerLogic</c> class
+        /// </summary>
         public CloudManagerLogic()
         {
             _cloudList = new List<CloudInfo>();
@@ -39,6 +42,11 @@ namespace Cloud_Manager
             PreviousPath = "/";
         }
 
+        /// <summary>
+        /// Initializes a new instance of specified <paramref name="type"/> and adds it into the list. 
+        /// </summary>
+        /// <param name="name">Displayed name of the cloud.</param>
+        /// <param name="type">The cloud instance of what <paramref name="type"/> need to be created.</param>
         public void AddCloud(string name, CloudManagerType type)
         {
             switch (type)
@@ -54,7 +62,11 @@ namespace Cloud_Manager
             
         }
 
-        public void AddCloud(string nameAndType)
+        /// <summary>
+        /// Initializes an instance of the cloud via string <paramref name="nameAndType"/>.
+        /// </summary>
+        /// <param name="nameAndType">Contains name and type of the cloud</param>
+        private void AddCloud(string nameAndType)
         {
             string[] splited = nameAndType.Split(':');
             switch (splited[1])
@@ -69,11 +81,20 @@ namespace Cloud_Manager
             }
         }
 
+        /// <summary>
+        /// Renames cloud.
+        /// </summary>
+        /// <param name="name">New name of cloud.</param>
+        /// <param name="cloud">An object which name should be renamed.</param>
         public void RenameCloud(string name, CloudInfo cloud)
         {
             cloud.Name = name;
         }
 
+        /// <summary>
+        /// Removes cloud.
+        /// </summary>
+        /// <param name="name">The name of the removable cloud.</param>
         public void RemoveCloud(string name)
         {
             foreach (var cloud in _cloudList)
@@ -85,6 +106,10 @@ namespace Cloud_Manager
             }
         }
 
+        /// <summary>
+        /// Initializes and return a start folder that contains cloud names that has saved.
+        /// </summary>
+        /// <returns>A list that contains cloud names.</returns>
         public ObservableCollection<FileStructure> InitStartFolder()
         {
             var files = new ObservableCollection<FileStructure>();
@@ -98,6 +123,10 @@ namespace Cloud_Manager
             return files;
         }
 
+        /// <summary>
+        /// Refreshes and return files info of the current cloud.
+        /// </summary>
+        /// <returns>A list of refreshed files info.</returns>
         public ObservableCollection<FileStructure> RefreshInfo()
         {
             if (CurrentPath == "/")
@@ -110,10 +139,16 @@ namespace Cloud_Manager
                 
         }
 
+        /// <summary>
+        /// Returns a list of the files that are siblings of the parent directory.
+        /// </summary>
+        /// <returns>A list of sibling of the parent directory.</returns>
         public ObservableCollection<FileStructure> GetParentDirectory()
         {
+            // The parent directory of the root is root
             if (CurrentPath == "/")
                 return InitStartFolder();
+            // The parent directory of the cloud root is program root
             else if (CurrentPath.IndexOf('/') == CurrentPath.LastIndexOf('/'))
             {
 
@@ -132,6 +167,7 @@ namespace Cloud_Manager
                 PreviousPath = CurrentPath;
                 CurrentPath = CurrentPath.Substring(0,
                     CurrentPath.Length - _currentCloudInfo.CurrentDir.Name.Length - 1);
+                // If parent directory is cloud root
                 if (CurrentPath == '/' + _currentCloudInfo.Name)
                 {
                     _currentCloudInfo.CurrentDir = new FileStructure() {Name = "Root"};
@@ -152,6 +188,10 @@ namespace Cloud_Manager
             return null;
         }
 
+        /// <summary>
+        /// Returns a list of the clouds.
+        /// </summary>
+        /// <returns>A list of the clouds</returns>
         public ObservableCollection<FileStructure> GetHomeDirectory()
         {
             PreviousPath = CurrentPath;
@@ -160,6 +200,10 @@ namespace Cloud_Manager
             return InitStartFolder();
         }
 
+        /// <summary>
+        /// Returns a list of files in the previous folder.
+        /// </summary>
+        /// <returns>A list of files in the previous folder</returns>
         public ObservableCollection<FileStructure> GetPreviousDirectory()
         {
             // If previous path is the selection between clouds
@@ -210,6 +254,9 @@ namespace Cloud_Manager
             return null;
         }
 
+        /// <summary>
+        /// Downloads the first file of list that contains selected files.
+        /// </summary>
         public void DownloadFile()
         {
             var selectedItem = SelectedItems.First();
@@ -217,11 +264,17 @@ namespace Cloud_Manager
                 _currentCloudInfo.Cloud.DownloadFile(selectedItem.Name, selectedItem.Id);
         }
 
+        /// <summary>
+        /// Uploads a file into the current directory.
+        /// </summary>
         public void UploadFile()
         {
             _currentCloudInfo.Cloud.UploadFile(_currentCloudInfo.CurrentDir);
         }
 
+        /// <summary>
+        /// Adds selected files into the list of cuted files.
+        /// </summary>
         public void CutFiles()
         {
             CutItems.Clear();
@@ -232,12 +285,19 @@ namespace Cloud_Manager
             SelectedItems.Clear();
         }
 
+        /// <summary>
+        /// Pastes files from the list of cuted files into the current directory.
+        /// </summary>
         public void PasteFiles()
         {
             _currentCloudInfo.Cloud.PasteFiles(CutItems, _currentCloudInfo.CurrentDir);
             CutItems.Clear();
         }
 
+        /// <summary>
+        /// Creates a new folder with selected <paramref name="name"/>.
+        /// </summary>
+        /// <param name="name">The name of a new folder</param>
         public void CreateFolder(string name)
         {
             if (name != "")
@@ -322,7 +382,7 @@ namespace Cloud_Manager
                 byte[] array = new byte[stream.Length];
                 stream.Read(array, 0, array.Length);
                 string textFromFile = System.Text.Encoding.Default.GetString(array);
-                textArray = textFromFile.Split(new char[]{','}, StringSplitOptions.RemoveEmptyEntries);
+                textArray = textFromFile.Split(new[]{','}, StringSplitOptions.RemoveEmptyEntries);
 
             }
 
