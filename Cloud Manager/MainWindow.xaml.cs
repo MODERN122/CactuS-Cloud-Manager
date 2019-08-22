@@ -187,7 +187,7 @@ namespace Cloud_Manager
 
         private void renameFile_Click(object sender, RoutedEventArgs e)
         {
-            mainWindow.popupNewFolder.IsOpen = false;
+            mainWindow.popupRenameFile.IsOpen = false;
             _cloudManagerLogic.RenameFile(txtRenamedFile.Text);
             FolderItems = _cloudManagerLogic.RefreshInfo();
             NotifyMenuItems();
