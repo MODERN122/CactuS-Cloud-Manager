@@ -82,6 +82,8 @@
                 </DataGrid.Columns>
                 <DataGrid.ContextMenu>
                     <ContextMenu>
+                        <MenuItem Header="{x:Static res:Resources.RefreshButton}" Click="refresh_Click"/>
+                        <Separator/>
                         <MenuItem Header="{x:Static res:Resources.DownloadButton}" Click="download_Click"/>
                         <MenuItem Header="{x:Static res:Resources.UploadButton}" Click="upload_Click"/>
                         <Separator/>
