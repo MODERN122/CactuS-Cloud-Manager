@@ -10,36 +10,61 @@ namespace Cloud_Manager
 {
     public class CloudInfo
     {
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets of the cloud.
+        /// </summary>
         public string Name { get; set; }
-        public CloudDrive Cloud { get; set; }
-        public ObservableCollection<FileStructure> Files {get;set; }
+        /// <summary>
+        /// Gets the cloud type.
+        /// </summary>
+        public CloudDrive Cloud { get; }
+        /// <summary>
+        /// Gets or sets a list of the cloud files.
+        /// </summary>
+        public ObservableCollection<FileStructure> Files { get; set; }
+        /// <summary>
+        /// Gets or sets the current directory.
+        /// </summary>
         public FileStructure CurrentDir { get; set; }
 
+
+        #endregion
+
+        #region Constructor
         public CloudInfo(string name, CloudDrive cloud)
         {
             Name = name;
             Cloud = cloud;
             Files = Cloud.GetFiles();
         }
+        #endregion
 
+        #region Methods
+
+        /// <summary>
+        /// Gets files that are in the current directory.
+        /// </summary>
+        /// <returns>A list of files that are in the current directory.</returns>
         public ObservableCollection<FileStructure> GetFilesInCurrentDir()
         {
             ObservableCollection<FileStructure> currentDirFiles = new ObservableCollection<FileStructure>();
-            if(CurrentDir.Name == "Trash")
+            if (CurrentDir.Name == "Trash")
             {
                 foreach (var item in Files)
                 {
-                    if(item.IsTrashed == true)
+                    if (item.IsTrashed == true)
                     {
                         currentDirFiles.Add(item);
                     }
                 }
             }
-            else if(CurrentDir.Name == "Root")
+            else if (CurrentDir.Name == "Root")
             {
-                foreach(var item in Files)
+                foreach (var item in Files)
                 {
-                    if (item.IsInRoot && item.IsTrashed==false)
+                    if (item.IsInRoot && item.IsTrashed == false)
                         currentDirFiles.Add(item);
                 }
             }
@@ -53,5 +78,8 @@ namespace Cloud_Manager
             }
             return currentDirFiles;
         }
+
+        #endregion
+
     }
 }

@@ -16,7 +16,7 @@ namespace Cloud_Manager.Managers
     class DropboxManager : CloudDrive
     {
         #region Variables
-        static DropboxClient _dbx;
+        private static DropboxClient _dbx;
         private string _pathName;
         private string _appKey;
         private string _loopbackHost;

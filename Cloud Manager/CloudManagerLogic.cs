@@ -8,14 +8,18 @@ using Cloud_Manager.Managers;
 namespace Cloud_Manager
 {
     class CloudManagerLogic
-    { 
-        public readonly ICollection<FileStructure> SelectedItems = new Collection<FileStructure>();
-        public readonly ICollection<FileStructure> CutItems = new Collection<FileStructure>();
-
+    {
+        #region Variables
         private readonly List<CloudInfo> _cloudList;
         private CloudInfo _currentCloudInfo;
 
         private string _currentPath;
+        #endregion
+
+        #region Properties
+        public readonly ICollection<FileStructure> SelectedItems = new Collection<FileStructure>();
+        public readonly ICollection<FileStructure> CutItems = new Collection<FileStructure>();
+
         public string CurrentPath
         {
             get => _currentPath ?? "/";
@@ -30,6 +34,10 @@ namespace Cloud_Manager
 
         public string PreviousPath { get; set; }
 
+        #endregion
+
+        #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <c>CloudManagerLogic</c> class
         /// </summary>
@@ -41,6 +49,10 @@ namespace Cloud_Manager
             CurrentPath = "/";
             PreviousPath = "/";
         }
+
+        #endregion
+
+        #region Methods
 
         /// <summary>
         /// Initializes a new instance of specified <paramref name="type"/> and adds it into the list. 
@@ -59,7 +71,7 @@ namespace Cloud_Manager
                     _cloudList.Add(new CloudInfo(name, new DropboxManager(name)));
                     break;
             }
-            
+
         }
 
         /// <summary>
@@ -115,7 +127,7 @@ namespace Cloud_Manager
             var files = new ObservableCollection<FileStructure>();
             foreach (var cloud in _cloudList)
             {
-                files.Add(new FileStructure(){Name = cloud.Name});
+                files.Add(new FileStructure() { Name = cloud.Name });
             }
             SelectedItems.Clear();
             CutItems.Clear();
@@ -136,7 +148,7 @@ namespace Cloud_Manager
                 _currentCloudInfo.Files = _currentCloudInfo.Cloud.GetFiles();
                 return _currentCloudInfo.GetFilesInCurrentDir();
             }
-                
+
         }
 
         /// <summary>
@@ -170,7 +182,7 @@ namespace Cloud_Manager
                 // If parent directory is cloud root
                 if (CurrentPath == '/' + _currentCloudInfo.Name)
                 {
-                    _currentCloudInfo.CurrentDir = new FileStructure() {Name = "Root"};
+                    _currentCloudInfo.CurrentDir = new FileStructure() { Name = "Root" };
                     return _currentCloudInfo.GetFilesInCurrentDir();
                 }
                 else
@@ -249,7 +261,7 @@ namespace Cloud_Manager
                     }
                 }
             }
-            
+
 
             return null;
         }
@@ -304,29 +316,45 @@ namespace Cloud_Manager
                 _currentCloudInfo.Cloud.CreateFolder(name, _currentCloudInfo.CurrentDir);
         }
 
+        /// <summary>
+        /// Deletes selected files (files that are in the selected files array).
+        /// </summary>
         public void RemoveFiles()
         {
             _currentCloudInfo.Cloud.RemoveFile(SelectedItems);
             SelectedItems.Clear();
         }
 
+        /// <summary>
+        /// Moves selected files into trash folder (files that are in the selected files array).
+        /// </summary>
         public void TrashFiles()
         {
             _currentCloudInfo.Cloud.TrashFile(SelectedItems);
             SelectedItems.Clear();
         }
 
+        /// <summary>
+        /// Moves selected files from trash folder into root (files that are in the selected files array). 
+        /// </summary>
         public void UnTrashFiles()
         {
             _currentCloudInfo.Cloud.UnTrashFile(SelectedItems);
             SelectedItems.Clear();
         }
 
+        /// <summary>
+        /// Moves all files from the trash folder into root folder.
+        /// </summary>
         public void ClearTrash()
         {
             _currentCloudInfo.Cloud.ClearTrash();
         }
 
+        /// <summary>
+        /// Renames selected file.
+        /// </summary>
+        /// <param name="name">The new name of file</param>
         public void RenameFile(string name)
         {
             if (name != "")
@@ -335,6 +363,11 @@ namespace Cloud_Manager
             SelectedItems.Clear();
         }
 
+        /// <summary>
+        /// Opens file. If file is a folder then returns a list of inner files.
+        /// </summary>
+        /// <param name="item">The file that was interacted.</param>
+        /// <returns> A list of inner files.</returns>
         public ObservableCollection<FileStructure> EnterFile(FileStructure item)
         {
             if (CurrentPath == "/")
@@ -362,34 +395,52 @@ namespace Cloud_Manager
             return null;
         }
 
+        /// <summary>
+        /// Saves information about clouds into a file.
+        /// </summary>
         public void SaveInfo()
         {
             using (var stream = new FileStream("profile\\clouds.data", FileMode.Create))
             {
                 foreach (var cloud in _cloudList)
                 {
-                    byte[] array = System.Text.Encoding.Default.GetBytes(cloud.Name+':'+cloud.Cloud+',');
+                    byte[] array = System.Text.Encoding.Default.GetBytes(cloud.Name + ':' + cloud.Cloud + ',');
                     stream.Write(array, 0, array.Length);
                 }
             }
         }
 
+        /// <summary>
+        /// Gets information about clouds from a file
+        /// </summary>
         public void GetInfo()
         {
-            string[] textArray;
-            using (var stream = new FileStream("profile\\clouds.data", FileMode.Open, FileAccess.Read))
+            try
             {
-                byte[] array = new byte[stream.Length];
-                stream.Read(array, 0, array.Length);
-                string textFromFile = System.Text.Encoding.Default.GetString(array);
-                textArray = textFromFile.Split(new[]{','}, StringSplitOptions.RemoveEmptyEntries);
+                string[] textArray;
+                using (var stream = new FileStream("profile\\clouds.data", FileMode.Open, FileAccess.Read))
+                {
+                    byte[] array = new byte[stream.Length];
+                    stream.Read(array, 0, array.Length);
+                    string textFromFile = System.Text.Encoding.Default.GetString(array);
+                    textArray = textFromFile.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
+                }
+
+                foreach (var item in textArray)
+                {
+                    AddCloud(item);
+                }
+            }
+            catch (Exception)
+            {
+                // TODO: Add log messages
             }
 
-            foreach (var item in textArray)
-            {
-                AddCloud(item);
-            }
+
         }
+
+        #endregion
+
     }
 }
