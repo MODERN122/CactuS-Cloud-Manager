@@ -56,6 +56,7 @@
                     <MenuItem Header="Русский" Click="MenuItem_Click"/>
                 </MenuItem>
             </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.SearchButton}" Click="search_Click"/>
         </Menu>
         <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="425.16">
             <Grid.RowDefinitions>

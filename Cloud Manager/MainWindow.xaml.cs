@@ -305,6 +305,11 @@ namespace Cloud_Manager
         {
             _cloudManagerLogic.SaveInfo();
         }
+
+        private void search_Click(object sender, RoutedEventArgs e)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
 
