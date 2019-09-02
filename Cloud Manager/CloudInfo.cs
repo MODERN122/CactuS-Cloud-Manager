@@ -49,14 +49,14 @@ namespace Cloud_Manager
         /// <returns>A list of files that are in the current directory.</returns>
         public ObservableCollection<FileStructure> GetFilesInCurrentDir()
         {
-            ObservableCollection<FileStructure> currentDirFiles = new ObservableCollection<FileStructure>();
+            List<FileStructure> files = new List<FileStructure>();
             if (CurrentDir.Name == "Trash")
             {
                 foreach (var item in Files)
                 {
                     if (item.IsTrashed == true)
                     {
-                        currentDirFiles.Add(item);
+                        files.Add(item);
                     }
                 }
             }
@@ -65,7 +65,9 @@ namespace Cloud_Manager
                 foreach (var item in Files)
                 {
                     if (item.IsInRoot && item.IsTrashed == false)
-                        currentDirFiles.Add(item);
+                    {
+                        files.Add(item);
+                    }
                 }
             }
             else
@@ -73,10 +75,14 @@ namespace Cloud_Manager
                 foreach (var item in Files)
                 {
                     if (item.Parents.Count > 0 && item.Parents[0] == CurrentDir.Id)
-                        currentDirFiles.Add(item);
+                    {
+                        files.Add(item);
+                    }
                 }
             }
-            return currentDirFiles;
+
+            files.Sort();
+            return new ObservableCollection<FileStructure>(files);
         }
 
         #endregion

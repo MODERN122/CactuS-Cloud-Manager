@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
 using Cloud_Manager.Managers;
 
 namespace Cloud_Manager
 {
-    public class FileStructure
+    public class FileStructure : IComparable
     {
         #region Properties
 
@@ -234,5 +233,13 @@ namespace Cloud_Manager
         }
 
         #endregion
+
+        public int CompareTo(object obj)
+        {
+            FileStructure file = obj as FileStructure;
+            if (file != null)
+                return this.Name.CompareTo(file.Name);
+            throw new Exception("Not possible to compare these objects");
+        }
     }
 }
