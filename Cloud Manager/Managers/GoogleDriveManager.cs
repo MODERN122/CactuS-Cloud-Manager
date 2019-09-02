@@ -21,7 +21,7 @@ namespace Cloud_Manager.Managers
 
         public DriveService service;
         private UserCredential credential;
-        private string _pathName;
+        private readonly string _pathName;
 
         public static string root = "";
 
@@ -116,9 +116,7 @@ namespace Cloud_Manager.Managers
 
         public override void UploadFile(FileStructure curDir)
         {
-            var openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "All files (*.*)|*.*";
-            openFileDialog.FileName = "";
+            var openFileDialog = new OpenFileDialog {Filter = "All files (*.*)|*.*", FileName = ""};
             if (openFileDialog.ShowDialog() == true)
             {
                 string mimeType = "application/unknown";
@@ -187,8 +185,7 @@ namespace Cloud_Manager.Managers
         {
             foreach (var item in selectedFiles)
             {
-                Google.Apis.Drive.v3.Data.File file = new Google.Apis.Drive.v3.Data.File();
-                file.Trashed = true;
+                Google.Apis.Drive.v3.Data.File file = new Google.Apis.Drive.v3.Data.File {Trashed = true};
                 service.Files.Update(file, item.Id).Execute();
             }
         }
@@ -197,8 +194,7 @@ namespace Cloud_Manager.Managers
         {
             foreach (var item in selectedFiles)
             {
-                Google.Apis.Drive.v3.Data.File file = new Google.Apis.Drive.v3.Data.File();
-                file.Trashed = false;
+                Google.Apis.Drive.v3.Data.File file = new Google.Apis.Drive.v3.Data.File {Trashed = false};
                 service.Files.Update(file, item.Id).Execute();
             }
         }

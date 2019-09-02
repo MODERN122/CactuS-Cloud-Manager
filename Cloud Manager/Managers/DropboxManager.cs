@@ -17,7 +17,7 @@ namespace Cloud_Manager.Managers
     {
         #region Variables
         private static DropboxClient _dbx;
-        private string _pathName;
+        private readonly string _pathName;
         private string _appKey;
         private string _loopbackHost;
         private Uri _redirectUri;
@@ -94,16 +94,22 @@ namespace Cloud_Manager.Managers
                 _appKey,
                 _redirectUri,
                 state: state);
-            var http = new HttpListener();
-            http.Prefixes.Add(_loopbackHost);
-            http.Start();
+            OAuth2Response result;
+            using (var http = new HttpListener())
+            {
+                http.Prefixes.Add(_loopbackHost);
+                http.Start();
 
-            System.Diagnostics.Process.Start(authUri.ToString());
+                System.Diagnostics.Process.Start(authUri.ToString());
 
-            await HandleOAuth2Redirect(http);
+                await HandleOAuth2Redirect(http);
 
-            // Handle redirect from JS and process OAuth response.
-            var result = await HandleJsRedirect(http);
+                // Handle redirect from JS and process OAuth response.
+                result = await HandleJsRedirect(http);
+
+            }
+
+
 
             if (result.State != state)
             {
@@ -200,9 +206,7 @@ namespace Cloud_Manager.Managers
 
         public override void UploadFile(FileStructure curDir)
         {
-            var openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "All files (*.*)|*.*";
-            openFileDialog.FileName = "";
+            var openFileDialog = new OpenFileDialog {Filter = "All files (*.*)|*.*", FileName = ""};
             if (openFileDialog.ShowDialog() == true)
             {
                 string mimeType = "application/unknown";
