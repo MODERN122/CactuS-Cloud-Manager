@@ -39,6 +39,12 @@ namespace Cloud_Manager
             Cloud = cloud;
             Files = Cloud.GetFiles();
         }
+
+
+        public CloudInfo()
+        {
+
+        }
         #endregion
 
         #region Methods

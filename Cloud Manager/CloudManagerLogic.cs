@@ -34,6 +34,12 @@ namespace Cloud_Manager
 
         public string PreviousPath { get; set; }
 
+        public List<CloudInfo> CloudList
+        {
+            get => _cloudList;
+
+        }
+
         #endregion
 
         #region Constructors

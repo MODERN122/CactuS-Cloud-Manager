@@ -283,7 +283,7 @@ namespace Cloud_Manager
 
         private void addCloud_Click(object sender, RoutedEventArgs e)
         {
-
+            throw new System.NotImplementedException();
         }
 
         private void renameCloud_Click(object sender, RoutedEventArgs e)
@@ -308,7 +308,9 @@ namespace Cloud_Manager
 
         private void search_Click(object sender, RoutedEventArgs e)
         {
-            throw new System.NotImplementedException();
+            var searchWindow = new SearchWindow(_cloudManagerLogic.CloudList);
+            searchWindow.Show();
+
         }
     }
 }
