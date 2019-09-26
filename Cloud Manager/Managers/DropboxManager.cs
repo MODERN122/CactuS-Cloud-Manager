@@ -25,6 +25,10 @@ namespace Cloud_Manager.Managers
         #endregion
 
         #region Constructor
+        /// <summary>
+        /// Initializes a new instance of the <c>DropboxManager</c> class
+        /// </summary>
+        /// <param name="name">Name of the cloud</param>
         public DropboxManager(string name)
         {
             GetAppInfo();
@@ -46,6 +50,12 @@ namespace Cloud_Manager.Managers
         #region Properties
         #endregion
 
+        #region Methods
+
+        /// <summary>
+        /// Saves user token into a file for a further login w/o using a browser.
+        /// </summary>
+        /// <param name="token">User token</param>
         private void SaveCredentials(string token)
         {
             using (var stream = new FileStream(_pathName, FileMode.Create)) 
@@ -57,6 +67,9 @@ namespace Cloud_Manager.Managers
             }
         }
 
+        /// <summary>
+        /// Gets user token from a file. 
+        /// </summary>
         private void GetCredentials()
         {
             using (var stream = new FileStream(_pathName, FileMode.Open, FileAccess.Read))
@@ -70,6 +83,9 @@ namespace Cloud_Manager.Managers
             }
         }
 
+        /// <summary>
+        /// Gets an application information from a file. It is needed for requests to user files.
+        /// </summary>
         private void GetAppInfo()
         {
             using (var stream = new FileStream("client_secret_dropbox.json", FileMode.Open, FileAccess.Read))
@@ -86,6 +102,10 @@ namespace Cloud_Manager.Managers
             
         }
 
+        /// <summary>
+        /// Authorizes an application to work with user data. Provides via a browser.
+        /// </summary>
+        /// <returns></returns>
         public async Task<string> Authorize()
         {
             var state = Guid.NewGuid().ToString("N");
@@ -179,6 +199,12 @@ namespace Cloud_Manager.Managers
             }
         }
 
+        /// <summary>
+        /// Downloads a files which id equals parameter id.
+        /// </summary>
+        /// <param name="name">The name of the file</param>
+        /// <param name="id">The id of the file</param>
+        /// <returns></returns>
         public override void DownloadFile(string name, string id)
         {
             var saveDialog = new SaveFileDialog()
@@ -204,6 +230,10 @@ namespace Cloud_Manager.Managers
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="curDir"></param>
         public override void UploadFile(FileStructure curDir)
         {
             var openFileDialog = new OpenFileDialog {Filter = "All files (*.*)|*.*", FileName = ""};
@@ -315,4 +345,7 @@ namespace Cloud_Manager.Managers
             return new List<Metadata>(result.Entries);
         }
     }
+
+
+    #endregion
 }
