@@ -217,7 +217,7 @@ namespace Cloud_Manager.Managers
         {
             FilesResource.ListRequest listRequest = service.Files.List();
             listRequest.PageSize = 1000;
-            listRequest.Fields = "nextPageToken, files(id, name, fileExtension, size, modifiedByMeTime, parents, trashed, ownedByMe)";
+            listRequest.Fields = "nextPageToken, files(id, name, fileExtension, size, modifiedByMeTime, parents, trashed, ownedByMe, shared)";
             listRequest.PageToken = null;
             
             
@@ -230,7 +230,7 @@ namespace Cloud_Manager.Managers
                 fileList = new ObservableCollection<Google.Apis.Drive.v3.Data.File>();
                 foreach (var item in files)
                 {
-                    if (item.Parents != null && item.OwnedByMe==true) 
+                    if (item.Parents != null && item.OwnedByMe == true && item.Shared == false) 
                         fileList.Add(item);
                 }
                 fileList.Add(new Google.Apis.Drive.v3.Data.File() { Name = "Trash", Parents = new List<string>() { root }, Trashed = false });
