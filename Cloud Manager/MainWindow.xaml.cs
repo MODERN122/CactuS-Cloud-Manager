@@ -309,8 +309,8 @@ namespace Cloud_Manager
         private void search_Click(object sender, RoutedEventArgs e)
         {
             var searchWindow = new SearchWindow(_cloudManagerLogic.CloudList);
+            this.IsEnabled = false;
             searchWindow.Show();
-
         }
     }
 }

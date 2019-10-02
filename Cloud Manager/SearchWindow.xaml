@@ -7,25 +7,39 @@
         mc:Ignorable="d"
         Title="SearchWindow" Height="263.2" Width="500">
     <Grid>
-        <TextBlock HorizontalAlignment="Left" Margin="10,80.444,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Размер файла"/>
-        <TextBlock HorizontalAlignment="Left" Margin="10,141,0,0" TextWrapping="Wrap" Text="Дата изменения" VerticalAlignment="Top"/>
         <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Имя" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Height="29.762" Margin="130.729,79.255,0,0" TextWrapping="Wrap" Text="От" VerticalAlignment="Top" Width="123.809"/>
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="До" VerticalAlignment="Top" Margin="316.4,79.255,0,0"/>
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Облако" VerticalAlignment="Top" Margin="10,187,0,0" />
+        <TextBox Name="TbFileName" HorizontalAlignment="Left" Height="26" Margin="123,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="241"/>
 
-        <TextBox Name="TbFileName" HorizontalAlignment="Left" Height="33.816" Margin="123.288,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="240.476"/>
-        <TextBox Name="TbSizeAbove" HorizontalAlignment="Left" Height="21.804" Margin="179.2,74.6,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="75.338"/>
-        <TextBox Name="TbSizeLess" HorizontalAlignment="Left" Height="21.804" Margin="397.6,74.6,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="67.2"/>
-        <DatePicker Name="DatePickerModification" HorizontalAlignment="Left" Margin="179,137,0,0" VerticalAlignment="Top"/>
-        <ComboBox Name="ComboBoxClouds" HorizontalAlignment="Left" Margin="89,187,0,0" VerticalAlignment="Top" Width="192"/>
-
-        <Button Content="Поиск" HorizontalAlignment="Left" Margin="316,134,0,0" VerticalAlignment="Top" Width="159" Height="75" Click="Search_Click"/>
-        <ComboBox HorizontalAlignment="Left" Margin="114,139,0,0" VerticalAlignment="Top" Width="50">
-            <ComboBoxItem Name="Before" Content="До"/>
-            <ComboBoxItem Name="After" Content="После"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,80.444,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Размер файла"/>
+        <TextBlock HorizontalAlignment="Left" Height="17" Margin="123,80,0,0" TextWrapping="Wrap" Text="От" VerticalAlignment="Top" Width="20" RenderTransformOrigin="0.68,1.918"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="До" VerticalAlignment="Top" Margin="316,81,0,0"/>
+        <TextBox Name="TbSizeAbove" HorizontalAlignment="Left" Height="22" Margin="148,80,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="76"/>
+        <TextBox Name="TbSizeLess" HorizontalAlignment="Left" Height="22" Margin="336,80,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="68"/>
+        <ComboBox Name="ComboBoxGreater" HorizontalAlignment="Left" Margin="241,81,0,0" VerticalAlignment="Top" Width="49">
+            <ComboBoxItem Content="B"/>
+            <ComboBoxItem Content="KB"/>
+            <ComboBoxItem Content="MB"/>
+            <ComboBoxItem Content="GB"/>
+        </ComboBox>
+        <ComboBox Name="ComboBoxLess" HorizontalAlignment="Left" Margin="426,81,0,0" VerticalAlignment="Top" Width="49">
+            <ComboBoxItem Content="B"/>
+            <ComboBoxItem Content="KB"/>
+            <ComboBoxItem Content="MB"/>
+            <ComboBoxItem Content="GB"/>
         </ComboBox>
 
+        <TextBlock HorizontalAlignment="Left" Margin="10,141,0,0" TextWrapping="Wrap" Text="Дата изменения" VerticalAlignment="Top"/>
+        <ComboBox  Name="ComboBoxDate" HorizontalAlignment="Left" Margin="114,139,0,0" VerticalAlignment="Top" Width="50">
+            <ComboBoxItem Content="До" />
+            <ComboBoxItem Content="После"/>
+        </ComboBox>
+        <DatePicker Name="DatePickerModification" HorizontalAlignment="Left" Margin="179,137,0,0" VerticalAlignment="Top"/>
+
+
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Облако" VerticalAlignment="Top" Margin="10,187,0,0" />
+        <ComboBox Name="ComboBoxClouds" HorizontalAlignment="Left" Margin="89,187,0,0" VerticalAlignment="Top" Width="192"/>
+        
+        <Button Content="Поиск" HorizontalAlignment="Left" Margin="316,134,0,0" VerticalAlignment="Top" Width="159" Height="75" Click="Search_Click"/>
 
     </Grid>
 </Window>

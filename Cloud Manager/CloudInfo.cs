@@ -91,6 +91,56 @@ namespace Cloud_Manager
             return new ObservableCollection<FileStructure>(files);
         }
 
+        /// <summary>
+        /// Searches files which name contains <paramref name="fileName"/>,
+        /// size is above than <paramref name="minSize"/> and less than <paramref name="maxSize"/>,
+        /// and have lastModifiedDate less/above than <paramref name="date"/>.
+        /// </summary>
+        /// <param name="fileName">A part of the file's name.</param>
+        /// <param name="minSize">Minimum size of the file.</param>
+        /// <param name="maxSize">Maximum size of the file. If it equals 0, than there is no maximum size.</param>
+        /// <param name="date">The date of the last file's modification.</param>
+        /// <param name="isBeforeDate">True, if the file's last modification date is earlier than <paramref name="date"/></param>
+        /// <returns>A list of files that have been searched.</returns>
+        public List<FileStructure> SearchFiles(string fileName, int minSize, int maxSize, DateTime? date, bool isBeforeDate)
+        {
+            var files = new List<FileStructure>();
+
+            foreach (var item in this.Files)
+            {
+                if (item.IsFile == true && item.Name.Contains(fileName) && item.Size > minSize)
+                {
+                    if (maxSize != 0 && item.Size < maxSize)
+                    {
+                        if (date != null && item.ModifiedByMeTime != null)
+                        {
+                            if ((isBeforeDate && item.ModifiedByMeTime < date) || (!isBeforeDate && item.ModifiedByMeTime > date))
+                                files.Add(item);
+                        }
+                        else if (date == null)
+                        {
+                            files.Add(item);
+                        }
+                    }
+                    else if (maxSize == 0)
+                    {
+                        if (date != null && item.ModifiedByMeTime != null)
+                        {
+                            if ((isBeforeDate && item.ModifiedByMeTime < date) || (!isBeforeDate && item.ModifiedByMeTime > date))
+                                files.Add(item);
+                        }
+                        else if (date == null)
+                        {
+                            files.Add(item);
+                        }
+                    }
+
+                }
+            }
+
+            return files;
+        }
+
         #endregion
 
     }
