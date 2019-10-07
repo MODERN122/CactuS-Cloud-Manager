@@ -24,14 +24,14 @@ namespace Cloud_Manager
 
         public SearchWindow(List<CloudInfo> clouds)
         {
-            this._clouds = clouds;
+            this._clouds = new List<CloudInfo>(clouds);
             InitializeComponent();
-            clouds.Reverse();
-            clouds.Add(new CloudInfo(){Name = "All clouds"});
-            clouds.Reverse();
+            _clouds.Reverse();
+            _clouds.Add(new CloudInfo(){Name = "All clouds"});
+            _clouds.Reverse();
 
             this.ComboBoxDate.SelectedIndex = 0;
-            this.ComboBoxClouds.ItemsSource = clouds;
+            this.ComboBoxClouds.ItemsSource = _clouds;
             this.ComboBoxClouds.DisplayMemberPath = "Name";
             this.ComboBoxClouds.SelectedIndex = 0;
             this.ComboBoxLess.SelectedIndex = 0;
@@ -87,9 +87,9 @@ namespace Cloud_Manager
 
             ObservableCollection<FileStructure> obsColFiles = new ObservableCollection<FileStructure>(files);
             
-            MainWindow.mainWindow.FolderItems = obsColFiles;
+            MainWindow.WindowObject.FolderItems = obsColFiles;
             this.Close();
-            MainWindow.mainWindow.IsEnabled = true;
+            MainWindow.WindowObject.IsEnabled = true;
         }
 
         private int ConvertToBytes(int size, int cbIndex)
