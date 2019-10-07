@@ -81,7 +81,7 @@ namespace Cloud_Manager
             FileExtension = file.FileExtension;
             ModifiedByMeTime = file.ModifiedByMeTime;
             Parents = (List<string>)file.Parents;
-            IsFile = file.FileExtension != null ? true : false;
+            IsFile = file.FileExtension != null;
             IsTrashed = file.Trashed;
             IsInRoot = false;
         }
@@ -209,8 +209,10 @@ namespace Cloud_Manager
                 flag = false;
                 foreach (var item in files)
                 {
-                    if (item.IsInRoot == true || item.Parents.Count > 0)
+                    if (item.IsInRoot || item.Parents.Count > 0)
+                    {
                         continue;
+                    }
                     if (item.Path == '/' + item.Name)
                     {
                         item.IsInRoot = true;

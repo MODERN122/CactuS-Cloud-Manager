@@ -10,9 +10,9 @@ namespace Cloud_Manager
 {
     public sealed partial class MainWindow : INotifyPropertyChanged
     {
-        public static string windowName = "Cloud Manager";
+        public static string WindowName { get; } = "Cloud Manager";
 
-        public static MainWindow mainWindow;
+        public static MainWindow WindowObject { get; private set; }
 
         private readonly CloudManagerLogic _cloudManagerLogic;
 
@@ -67,7 +67,7 @@ namespace Cloud_Manager
 
         public string WindowTitle
         {
-            get { return string.Format("{0} - {1}", windowName, _cloudManagerLogic.CurrentPath); }
+            get { return string.Format("{0} - {1}", WindowName, _cloudManagerLogic.CurrentPath); }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -79,7 +79,7 @@ namespace Cloud_Manager
             InitializeComponent();
             DataContext = this;
             OnPropertyChanged("WindowTitle");
-            mainWindow = this;
+            WindowObject = this;
 
             FolderItems = _cloudManagerLogic.InitStartFolder();
         }
@@ -187,7 +187,7 @@ namespace Cloud_Manager
 
         private void renameFile_Click(object sender, RoutedEventArgs e)
         {
-            mainWindow.popupRenameFile.IsOpen = false;
+            WindowObject.popupRenameFile.IsOpen = false;
             _cloudManagerLogic.RenameFile(txtRenamedFile.Text);
             FolderItems = _cloudManagerLogic.RefreshInfo();
             NotifyMenuItems();

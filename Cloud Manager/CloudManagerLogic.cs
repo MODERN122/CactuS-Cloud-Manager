@@ -76,6 +76,9 @@ namespace Cloud_Manager
                 case CloudManagerType.Dropbox:
                     _cloudList.Add(new CloudInfo(name, new DropboxManager(name)));
                     break;
+
+                default:
+                    throw new NotImplementedException();
             }
 
         }
@@ -96,6 +99,8 @@ namespace Cloud_Manager
                 case "Cloud_Manager.Managers.DropboxManager":
                     _cloudList.Add(new CloudInfo(splited[0], new DropboxManager(splited[0])));
                     break;
+                default:
+                    throw new NotImplementedException();
             }
         }
 
@@ -172,7 +177,10 @@ namespace Cloud_Manager
 
                 foreach (var item in _cloudList)
                 {
-                    if (CurrentPath != '/' + item.Name) continue;
+                    if (CurrentPath != '/' + item.Name)
+                    {
+                        continue;
+                    }
 
                     PreviousPath = CurrentPath;
                     CurrentPath = "/";
@@ -279,7 +287,9 @@ namespace Cloud_Manager
         {
             var selectedItem = SelectedItems.First();
             if (selectedItem != null)
+            {
                 _currentCloudInfo.Cloud.DownloadFile(selectedItem.Name, selectedItem.Id);
+            }
         }
 
         /// <summary>
@@ -364,7 +374,9 @@ namespace Cloud_Manager
         public void RenameFile(string name)
         {
             if (name != "")
+            {
                 _currentCloudInfo.Cloud.RenameFile(SelectedItems, name);
+            }
 
             SelectedItems.Clear();
         }
