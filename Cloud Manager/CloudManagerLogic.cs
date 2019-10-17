@@ -170,7 +170,9 @@ namespace Cloud_Manager
         {
             // The parent directory of the root is root
             if (CurrentPath == "/")
+            {
                 return InitStartFolder();
+            }
             // The parent directory of the cloud root is program root
             else if (CurrentPath.IndexOf('/') == CurrentPath.LastIndexOf('/'))
             {
@@ -203,7 +205,7 @@ namespace Cloud_Manager
                 {
                     foreach (var item in _currentCloudInfo.Files)
                     {
-                        if (item.Id != _currentCloudInfo.CurrentDir.Parents[0]) continue;
+                        if (item.Id != _currentCloudInfo.CurrentDir.Parents[0]) { continue;}
 
                         _currentCloudInfo.CurrentDir = item;
                         return _currentCloudInfo.GetFilesInCurrentDir();

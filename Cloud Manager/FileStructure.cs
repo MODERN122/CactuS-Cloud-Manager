@@ -160,7 +160,9 @@ namespace Cloud_Manager
                     item.Path = "/" + item.Name;
                 }
                 if (item.IsTrashed == true)
+                {
                     item.Path = "/Trash/" + item.Name;
+                }
             }
 
             bool flag;

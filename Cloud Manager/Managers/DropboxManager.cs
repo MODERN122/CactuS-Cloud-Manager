@@ -34,7 +34,9 @@ namespace Cloud_Manager.Managers
             GetAppInfo();
             _pathName = "profile\\" + name + ".token_response";
             if (File.Exists(_pathName))
+            {
                 GetCredentials();
+            }
             else
             {
                 var task = Task.Run(() => Authorize());
@@ -212,7 +214,7 @@ namespace Cloud_Manager.Managers
                 FileName = name,
                 Filter = "All files (*.*)|*.*"
             };
-            if (saveDialog.ShowDialog() != true) return;
+            if (saveDialog.ShowDialog() != true) { return;}
 
             var downloadFileName = saveDialog.FileName;
             var task = Task.Run(() => Download(downloadFileName, id));
@@ -256,8 +258,11 @@ namespace Cloud_Manager.Managers
             {
                 foreach (var listItem in list.Entries)
                 {
-                    if ((listItem.IsFile && listItem.AsFile.Id == item.Id) || (listItem.IsFolder && listItem.AsFolder.Id == item.Id))
+                    if ((listItem.IsFile && listItem.AsFile.Id == item.Id) ||
+                        (listItem.IsFolder && listItem.AsFolder.Id == item.Id))
+                    {
                         _dbx.Files.MoveV2Async(listItem.PathDisplay, path + "/" + listItem.Name);
+                    }
                 }
             }
         }
@@ -284,8 +289,11 @@ namespace Cloud_Manager.Managers
             {
                 foreach (var listItem in list.Result.Entries)
                 {
-                    if ((listItem.IsFile && listItem.AsFile.Id == selectedItem.Id) || (listItem.IsFolder && listItem.AsFolder.Id == selectedItem.Id))
+                    if ((listItem.IsFile && listItem.AsFile.Id == selectedItem.Id) ||
+                        (listItem.IsFolder && listItem.AsFolder.Id == selectedItem.Id))
+                    {
                         _dbx.Files.DeleteV2Async(listItem.PathDisplay);
+                    }
                 }
             }
 
@@ -317,7 +325,9 @@ namespace Cloud_Manager.Managers
                     var path = listItem.PathDisplay;
                     path = path.Substring(0, path.LastIndexOf("/", StringComparison.Ordinal));
                     if (listItem.Name.IndexOf('.') >= 0)
+                    {
                         newName += listItem.Name.Substring(listItem.Name.LastIndexOf('.'));
+                    }
                     _dbx.Files.MoveV2Async(listItem.PathDisplay, path + "/" + newName);
                 }
             }

@@ -39,8 +39,10 @@ namespace Cloud_Manager
             get => _folderItems;
             set
             {
-                if(_cloudManagerLogic.CurrentPath != "/")
+                if (_cloudManagerLogic.CurrentPath != "/")
+                {
                     value.Insert(0, new FileStructure(){Name = ".."});
+                }
                 _folderItems = value;
                 OnPropertyChanged("FolderItems");
             }
@@ -210,17 +212,19 @@ namespace Cloud_Manager
             FileStructure item = GridItems.SelectedItem as FileStructure;
 
             if (item == null)
+            {
                 return;
-            if(item.Name=="..")
-                this.goUp_Click(this, null);
+            }
+
+            if (item.Name == "..")
+            {
+                goUp_Click(this, null);
+            }
             else
             {
                 FolderItems = _cloudManagerLogic.EnterFile(item);
                 NotifyMenuItems();
             }
-
-            
-
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -236,6 +240,9 @@ namespace Cloud_Manager
                 case "Русский":
                     ChangeLanguage("ru-RU");
                     MessageBox.Show("Программа сменит язык после рестарта.");
+                    break;
+                default:
+                    MessageBox.Show("Unexpected error. Restart the program.");
                     break;
             }
         }

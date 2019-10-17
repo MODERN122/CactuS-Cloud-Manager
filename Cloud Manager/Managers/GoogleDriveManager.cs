@@ -123,7 +123,9 @@ namespace Cloud_Manager.Managers
                 string ext = Path.GetExtension(openFileDialog.FileName).ToLower();
                 RegistryKey regKey = Registry.ClassesRoot.OpenSubKey(ext);
                 if (regKey != null && regKey.GetValue("Content Type") != null)
+                {
                     mimeType = regKey.GetValue("Content Type").ToString();
+                }
                 string shortFileName = openFileDialog.FileName;
                 shortFileName = shortFileName.Substring(shortFileName.LastIndexOf('\\', shortFileName.Length - 2) + 1);
                 var file = new Google.Apis.Drive.v3.Data.File()
@@ -230,8 +232,10 @@ namespace Cloud_Manager.Managers
                 fileList = new ObservableCollection<Google.Apis.Drive.v3.Data.File>();
                 foreach (var item in files)
                 {
-                    if (item.Parents != null && item.OwnedByMe == true && item.Shared == false) 
+                    if (item.Parents != null && item.OwnedByMe == true && item.Shared == false)
+                    {
                         fileList.Add(item);
+                    }
                 }
                 fileList.Add(new Google.Apis.Drive.v3.Data.File() { Name = "Trash", Parents = new List<string>() { Root }, Trashed = false });
             }

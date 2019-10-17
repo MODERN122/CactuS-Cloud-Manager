@@ -111,8 +111,11 @@ namespace Cloud_Manager
                     {
                         if (date != null && item.ModifiedByMeTime != null)
                         {
-                            if ((isBeforeDate && item.ModifiedByMeTime < date) || (!isBeforeDate && item.ModifiedByMeTime > date))
+                            if ((isBeforeDate && item.ModifiedByMeTime < date) ||
+                                (!isBeforeDate && item.ModifiedByMeTime > date))
+                            {
                                 files.Add(item);
+                            }
                         }
                         else if (date == null)
                         {
