@@ -17,7 +17,7 @@ namespace Cloud_Manager
             _clouds = new List<CloudInfo>(clouds);
             InitializeComponent();
             _clouds.Reverse();
-            _clouds.Add(new CloudInfo {Name = "All clouds"});
+            _clouds.Add(new CloudInfo { Name = "All clouds" });
             _clouds.Reverse();
 
             ComboBoxDate.SelectedIndex = 0;
@@ -43,7 +43,7 @@ namespace Cloud_Manager
             DateTime? date = null;
             if (DatePickerModification.SelectedDate != null)
             {
-                date = (DateTime) DatePickerModification.SelectedDate;
+                date = (DateTime)DatePickerModification.SelectedDate;
             }
 
             bool isBeforeDate = ComboBoxDate.SelectedIndex == 0;
@@ -57,10 +57,13 @@ namespace Cloud_Manager
                 List<FileStructure> tmpFiles = (ComboBoxClouds.SelectionBoxItem as CloudInfo)?.SearchFiles(nameOfFile, minSize, maxSize, date,
                     isBeforeDate);
                 if (tmpFiles != null)
+                {
                     foreach (var item in tmpFiles)
                     {
                         files.Add(item);
                     }
+
+                }
             }
             else
             {
@@ -69,15 +72,17 @@ namespace Cloud_Manager
                     if (item.Name != "All clouds")
                     {
                         List<FileStructure> tmpFiles = item.SearchFiles(nameOfFile, minSize, maxSize, date, isBeforeDate);
-                        foreach(var file in tmpFiles)
+                        foreach (var file in tmpFiles)
+                        {
                             files.Add(file);
+                        }
                     }
                 }
             }
             files.Sort();
 
             ObservableCollection<FileStructure> obsColFiles = new ObservableCollection<FileStructure>(files);
-            
+
             MainWindow.WindowObject.FolderItems = obsColFiles;
             Close();
             MainWindow.WindowObject.IsEnabled = true;

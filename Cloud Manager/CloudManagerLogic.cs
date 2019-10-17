@@ -331,7 +331,9 @@ namespace Cloud_Manager
         public void CreateFolder(string name)
         {
             if (name != "")
+            {
                 _currentCloudInfo.Cloud.CreateFolder(name, _currentCloudInfo.CurrentDir);
+            }
         }
 
         /// <summary>
