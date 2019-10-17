@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Cloud_Manager.Managers;
 
 namespace Cloud_Manager
@@ -106,9 +103,9 @@ namespace Cloud_Manager
         {
             var files = new List<FileStructure>();
 
-            foreach (var item in this.Files)
+            foreach (var item in Files)
             {
-                if (item.IsFile == true && item.Name.Contains(fileName) && item.Size > minSize)
+                if (item.IsFile && item.Name.Contains(fileName) && item.Size > minSize)
                 {
                     if (maxSize != 0 && item.Size < maxSize)
                     {

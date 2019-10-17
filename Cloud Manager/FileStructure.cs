@@ -54,7 +54,16 @@ namespace Cloud_Manager
         /// <summary>
         /// Initializes a new instance of FileStructure class.
         /// </summary>
+        /// <param name="modifiedByMeTime">The date and time of last modification</param>
         /// <param name="parents">A list of file's parents.</param>
+        /// <param name="id">The id of the file</param>
+        /// <param name="name">The name of the file</param>
+        /// <param name="size">The size of the file</param>
+        /// <param name="fileExtension">The file extension of the file</param>
+        /// <param name="path">The full path of the file</param>
+        /// <param name="isFile">True, if it is the file</param>
+        /// <param name="isTrashed">True, if it is in the trash folder.</param>
+        /// <param name="isInRoot">True, if it is in the root folder.</param>
         public FileStructure(string id, string name, long size, string fileExtension, DateTime modifiedByMeTime, List<string> parents, string path, bool isFile, bool isTrashed, bool isInRoot)
         {
             Id = id;
@@ -145,7 +154,7 @@ namespace Cloud_Manager
         {
             foreach (var item in files)
             {
-                if (item.Parents[0] == GoogleDriveManager.root)
+                if (item.Parents[0] == GoogleDriveManager.Root)
                 {
                     item.IsInRoot = true;
                     item.Path = "/" + item.Name;

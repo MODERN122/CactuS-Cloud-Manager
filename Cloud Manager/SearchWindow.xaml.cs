@@ -1,62 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Cloud_Manager
 {
     /// <summary>
     /// Логика взаимодействия для SearchWindow.xaml
     /// </summary>
-    public partial class SearchWindow : Window
+    public partial class SearchWindow
     {
         private readonly List<CloudInfo> _clouds;
 
         public SearchWindow(List<CloudInfo> clouds)
         {
-            this._clouds = new List<CloudInfo>(clouds);
+            _clouds = new List<CloudInfo>(clouds);
             InitializeComponent();
             _clouds.Reverse();
-            _clouds.Add(new CloudInfo(){Name = "All clouds"});
+            _clouds.Add(new CloudInfo {Name = "All clouds"});
             _clouds.Reverse();
 
-            this.ComboBoxDate.SelectedIndex = 0;
-            this.ComboBoxClouds.ItemsSource = _clouds;
-            this.ComboBoxClouds.DisplayMemberPath = "Name";
-            this.ComboBoxClouds.SelectedIndex = 0;
-            this.ComboBoxLess.SelectedIndex = 0;
-            this.ComboBoxGreater.SelectedIndex = 0;
+            ComboBoxDate.SelectedIndex = 0;
+            ComboBoxClouds.ItemsSource = _clouds;
+            ComboBoxClouds.DisplayMemberPath = "Name";
+            ComboBoxClouds.SelectedIndex = 0;
+            ComboBoxLess.SelectedIndex = 0;
+            ComboBoxGreater.SelectedIndex = 0;
         }
 
         private void Search_Click(object sender, RoutedEventArgs e)
         {
-            string nameOfFile = this.TbFileName.Text;
-            string cloudName = (this.ComboBoxClouds.SelectionBoxItem as CloudInfo).Name == "All clouds"
+            string nameOfFile = TbFileName.Text;
+            string cloudName = (ComboBoxClouds.SelectionBoxItem as CloudInfo)?.Name == "All clouds"
                 ? "All clouds"
-                : (this.ComboBoxClouds.SelectionBoxItem as CloudInfo).Name;
+                : (ComboBoxClouds.SelectionBoxItem as CloudInfo)?.Name;
 
-            int minSize = this.TbSizeAbove.Text == "" ? 0 : Int32.Parse(this.TbSizeAbove.Text);
-            int maxSize = this.TbSizeLess.Text == "" ? 0 : Int32.Parse(this.TbSizeLess.Text);
-            int cbIndex1 = this.ComboBoxGreater.SelectedIndex;
-            int cbIndex2 = this.ComboBoxLess.SelectedIndex;
+            int minSize = TbSizeAbove.Text == "" ? 0 : Int32.Parse(TbSizeAbove.Text);
+            int maxSize = TbSizeLess.Text == "" ? 0 : Int32.Parse(TbSizeLess.Text);
+            int cbIndex1 = ComboBoxGreater.SelectedIndex;
+            int cbIndex2 = ComboBoxLess.SelectedIndex;
 
             DateTime? date = null;
-            if (this.DatePickerModification.SelectedDate != null)
+            if (DatePickerModification.SelectedDate != null)
             {
-                date = (DateTime) this.DatePickerModification.SelectedDate;
+                date = (DateTime) DatePickerModification.SelectedDate;
             }
 
-            bool isBeforeDate = this.ComboBoxDate.SelectedIndex == 0 ? true : false;
+            bool isBeforeDate = ComboBoxDate.SelectedIndex == 0;
 
             minSize = ConvertToBytes(minSize, cbIndex1);
             maxSize = ConvertToBytes(maxSize, cbIndex2);
@@ -64,12 +54,13 @@ namespace Cloud_Manager
             List<FileStructure> files = new List<FileStructure>();
             if (cloudName != "All clouds")
             {
-                List<FileStructure> tmpFiles = (this.ComboBoxClouds.SelectionBoxItem as CloudInfo).SearchFiles(nameOfFile, minSize, maxSize, date,
+                List<FileStructure> tmpFiles = (ComboBoxClouds.SelectionBoxItem as CloudInfo)?.SearchFiles(nameOfFile, minSize, maxSize, date,
                     isBeforeDate);
-                foreach (var item in tmpFiles)
-                {
-                    files.Add(item);
-                }
+                if (tmpFiles != null)
+                    foreach (var item in tmpFiles)
+                    {
+                        files.Add(item);
+                    }
             }
             else
             {
@@ -88,7 +79,7 @@ namespace Cloud_Manager
             ObservableCollection<FileStructure> obsColFiles = new ObservableCollection<FileStructure>(files);
             
             MainWindow.WindowObject.FolderItems = obsColFiles;
-            this.Close();
+            Close();
             MainWindow.WindowObject.IsEnabled = true;
         }
 

@@ -19,22 +19,22 @@ namespace Cloud_Manager.Managers
     {
         static readonly string[] Scopes = { DriveService.Scope.Drive };
 
-        public DriveService service;
-        private UserCredential credential;
+        public DriveService Service;
+        private UserCredential _credential;
         private readonly string _pathName;
 
-        public static string root = "";
+        public static string Root = "";
 
         public ObservableCollection<Google.Apis.Drive.v3.Data.File> FolderItems { get; set; }
 
         public GoogleDriveManager(string name)
         {
             _pathName = "profile\\" + name + ".token_response";
-            credential = GetCredentials();
+            _credential = GetCredentials();
 
-            service = new DriveService(new BaseClientService.Initializer()
+            Service = new DriveService(new BaseClientService.Initializer()
             {
-                HttpClientInitializer = credential,
+                HttpClientInitializer = _credential,
                 ApplicationName = MainWindow.WindowName,
             });
 
@@ -46,7 +46,7 @@ namespace Cloud_Manager.Managers
         {
             using (var stream = new FileStream("client_secret_google.json", FileMode.Open, FileAccess.Read))
             {
-                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                _credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
                     GoogleClientSecrets.Load(stream).Secrets,
                     Scopes,
                     "user",
@@ -55,12 +55,12 @@ namespace Cloud_Manager.Managers
             }
             
 
-            return credential;
+            return _credential;
         }
 
         private void SetRoot()
         {
-            FilesResource.ListRequest listRequest = service.Files.List();
+            FilesResource.ListRequest listRequest = Service.Files.List();
             listRequest.PageSize = 1;
             listRequest.Fields = "nextPageToken, files(id, parents)";
             listRequest.PageToken = null;
@@ -70,7 +70,7 @@ namespace Cloud_Manager.Managers
 
             if (files != null && files.Count > 0)
             {
-                root = files[0].Parents[0];
+                Root = files[0].Parents[0];
             }
         }
         public override void DownloadFile(string name, string id)
@@ -83,11 +83,11 @@ namespace Cloud_Manager.Managers
             if (saveDialog.ShowDialog() == true)
             {
                 string downloadFileName = saveDialog.FileName;
-                var request = service.Files.Get(id);
+                var request = Service.Files.Get(id);
                 var stream = new MemoryStream();
 
                 request.MediaDownloader.ProgressChanged +=
-                    (IDownloadProgress progress) =>
+                    progress =>
                     {
                         switch (progress.Status)
                         {
@@ -120,7 +120,7 @@ namespace Cloud_Manager.Managers
             if (openFileDialog.ShowDialog() == true)
             {
                 string mimeType = "application/unknown";
-                string ext = System.IO.Path.GetExtension(openFileDialog.FileName).ToLower();
+                string ext = Path.GetExtension(openFileDialog.FileName).ToLower();
                 RegistryKey regKey = Registry.ClassesRoot.OpenSubKey(ext);
                 if (regKey != null && regKey.GetValue("Content Type") != null)
                     mimeType = regKey.GetValue("Content Type").ToString();
@@ -137,7 +137,7 @@ namespace Cloud_Manager.Managers
                 using (var stream = new FileStream(openFileDialog.FileName,
                         FileMode.Open))
                 {
-                    request = service.Files.Create(
+                    request = Service.Files.Create(
                         file, stream, mimeType);
                     request.Fields = "id";
                     request.Upload();
@@ -153,7 +153,7 @@ namespace Cloud_Manager.Managers
             {
                 foreach (var cutItem in cutFiles)
                 {
-                    updateRequest = service.Files.Update(new Google.Apis.Drive.v3.Data.File(), cutItem.Id);
+                    updateRequest = Service.Files.Update(new Google.Apis.Drive.v3.Data.File(), cutItem.Id);
                     updateRequest.RemoveParents = cutItem.Parents[0];
                     updateRequest.AddParents = FolderItems[0].Parents[0];
                     updateRequest.Execute();
@@ -170,14 +170,14 @@ namespace Cloud_Manager.Managers
                 Parents = new List<string>() { parent },
                 MimeType = "application/vnd.google-apps.folder",
             };
-            service.Files.Create(fileMetaData).Execute();
+            Service.Files.Create(fileMetaData).Execute();
         }
 
         public override void RemoveFile(ICollection<FileStructure> selectedFiles)
         {
             foreach (var item in selectedFiles)
             {
-                service.Files.Delete(item.Id).Execute();
+                Service.Files.Delete(item.Id).Execute();
             }
         }
 
@@ -186,7 +186,7 @@ namespace Cloud_Manager.Managers
             foreach (var item in selectedFiles)
             {
                 Google.Apis.Drive.v3.Data.File file = new Google.Apis.Drive.v3.Data.File {Trashed = true};
-                service.Files.Update(file, item.Id).Execute();
+                Service.Files.Update(file, item.Id).Execute();
             }
         }
 
@@ -195,13 +195,13 @@ namespace Cloud_Manager.Managers
             foreach (var item in selectedFiles)
             {
                 Google.Apis.Drive.v3.Data.File file = new Google.Apis.Drive.v3.Data.File {Trashed = false};
-                service.Files.Update(file, item.Id).Execute();
+                Service.Files.Update(file, item.Id).Execute();
             }
         }
 
         public override void ClearTrash()
         {
-            service.Files.EmptyTrash().Execute();
+            Service.Files.EmptyTrash().Execute();
         }
 
         public override void RenameFile(ICollection<FileStructure> selectedFiles, string newName)
@@ -210,12 +210,12 @@ namespace Cloud_Manager.Managers
             {
                 Name = newName
             };
-            service.Files.Update(file, selectedFiles.First<FileStructure>().Id).Execute();
+            Service.Files.Update(file, selectedFiles.First<FileStructure>().Id).Execute();
         }
 
         public override ObservableCollection<FileStructure> GetFiles()
         {
-            FilesResource.ListRequest listRequest = service.Files.List();
+            FilesResource.ListRequest listRequest = Service.Files.List();
             listRequest.PageSize = 1000;
             listRequest.Fields = "nextPageToken, files(id, name, fileExtension, size, modifiedByMeTime, parents, trashed, ownedByMe, shared)";
             listRequest.PageToken = null;
@@ -233,7 +233,7 @@ namespace Cloud_Manager.Managers
                     if (item.Parents != null && item.OwnedByMe == true && item.Shared == false) 
                         fileList.Add(item);
                 }
-                fileList.Add(new Google.Apis.Drive.v3.Data.File() { Name = "Trash", Parents = new List<string>() { root }, Trashed = false });
+                fileList.Add(new Google.Apis.Drive.v3.Data.File() { Name = "Trash", Parents = new List<string>() { Root }, Trashed = false });
             }
             else
             {

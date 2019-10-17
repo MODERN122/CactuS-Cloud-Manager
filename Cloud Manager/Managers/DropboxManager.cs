@@ -239,15 +239,10 @@ namespace Cloud_Manager.Managers
             var openFileDialog = new OpenFileDialog {Filter = "All files (*.*)|*.*", FileName = ""};
             if (openFileDialog.ShowDialog() == true)
             {
-                string mimeType = "application/unknown";
-                string ext = Path.GetExtension(openFileDialog.FileName).ToLower();
-                RegistryKey regKey = Registry.ClassesRoot.OpenSubKey(ext);
-                if (regKey != null && regKey.GetValue("Content Type") != null)
-                    mimeType = regKey.GetValue("Content Type").ToString();
                 string fileName = openFileDialog.FileName;
                 fileName = fileName.Substring(fileName.LastIndexOf('\\', fileName.Length - 2) + 1);
                 fileName = curDir.Path + '/' + fileName;
-                var task = Task.Run(() => Upload(fileName, openFileDialog.FileName)); ;
+                var task = Task.Run(() => Upload(fileName, openFileDialog.FileName));
                 task.Wait();
             }
         }
@@ -276,8 +271,8 @@ namespace Cloud_Manager.Managers
             }
             else
             {
-                path = path.Substring(path.IndexOf("/") + 1);
-                path = path.Substring(path.IndexOf("/"));
+                path = path.Substring(path.IndexOf("/", StringComparison.Ordinal) + 1);
+                path = path.Substring(path.IndexOf("/", StringComparison.Ordinal));
                 _dbx.Files.CreateFolderV2Async(path + "/" + name);
             }
         }
@@ -316,11 +311,11 @@ namespace Cloud_Manager.Managers
             var list = _dbx.Files.ListFolderAsync(string.Empty, true).Result;
             foreach (var listItem in list.Entries)
             {
-                if ((listItem.IsFile && listItem.AsFile.Id == selectedFiles.First<FileStructure>().Id)
-                    || (listItem.IsFolder && listItem.AsFolder.Id == selectedFiles.First<FileStructure>().Id))
+                if ((listItem.IsFile && listItem.AsFile.Id == selectedFiles.First().Id)
+                    || (listItem.IsFolder && listItem.AsFolder.Id == selectedFiles.First().Id))
                 {
                     var path = listItem.PathDisplay;
-                    path = path.Substring(0, path.LastIndexOf("/"));
+                    path = path.Substring(0, path.LastIndexOf("/", StringComparison.Ordinal));
                     if (listItem.Name.IndexOf('.') >= 0)
                         newName += listItem.Name.Substring(listItem.Name.LastIndexOf('.'));
                     _dbx.Files.MoveV2Async(listItem.PathDisplay, path + "/" + newName);
@@ -331,7 +326,7 @@ namespace Cloud_Manager.Managers
 
         public override ObservableCollection<FileStructure> GetFiles()
         {
-            var task = Task.Run(() => this.GetFolderFiles());
+            var task = Task.Run(() => GetFolderFiles());
             task.Wait();
             var files = task.Result;
             

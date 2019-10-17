@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:converters="clr-namespace:Cloud_Manager.Converters"
-        xmlns:local="clr-namespace:Cloud_Manager"
         xmlns:res="clr-namespace:Cloud_Manager.Properties"
         mc:Ignorable="d"
         Title="{Binding WindowTitle}" Height="485" Width="800"
