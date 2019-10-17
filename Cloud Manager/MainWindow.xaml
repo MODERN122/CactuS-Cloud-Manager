@@ -86,12 +86,12 @@
                     <ContextMenu>
                         <MenuItem Header="{x:Static res:Resources.RefreshButton}" Click="refresh_Click"/>
                         <Separator/>
-                        <MenuItem Header="{x:Static res:Resources.DownloadButton}" Click="download_Click"/>
-                        <MenuItem Header="{x:Static res:Resources.UploadButton}" Click="upload_Click"/>
+                        <MenuItem Header="{x:Static res:Resources.DownloadButton}" IsEnabled="{Binding IsDownloadAvailable}" Click="download_Click"/>
+                        <MenuItem Header="{x:Static res:Resources.UploadButton}" IsEnabled="{Binding IsDriveOpened}" Click="upload_Click"/>
                         <Separator/>
-                        <MenuItem Header="{x:Static res:Resources.CutButton}" Click="cut_Click"/>
+                        <MenuItem Header="{x:Static res:Resources.CutButton}" IsEnabled="{Binding IsSelected}" Click="cut_Click"/>
                         <MenuItem Header="{x:Static res:Resources.CopyButton}" Click="copy_Click"/>
-                        <MenuItem Header="{x:Static res:Resources.PasteButton}" Click="paste_Click"/>
+                        <MenuItem Header="{x:Static res:Resources.PasteButton}" IsEnabled="{Binding IsExistItems}" Click="paste_Click"/>
                         <Separator/>
                         <MenuItem Header="{x:Static res:Resources.RenameButton}" Click="rename_Click"/>
                     </ContextMenu>
