@@ -137,7 +137,7 @@ namespace Cloud_Manager
             var files = new ObservableCollection<FileStructure>();
             foreach (var cloud in _cloudList)
             {
-                files.Add(new FileStructure() { Name = cloud.Name });
+                files.Add(new FileStructure { Name = cloud.Name });
             }
             SelectedItems.Clear();
             CutItems.Clear();
@@ -206,7 +206,7 @@ namespace Cloud_Manager
                 {
                     foreach (var item in _currentCloudInfo.Files)
                     {
-                        if (item.Id != _currentCloudInfo.CurrentDir.Parents[0]) { continue;}
+                        if (item.Id != _currentCloudInfo.CurrentDir.Parents[0]) { continue; }
 
                         _currentCloudInfo.CurrentDir = item;
                         return _currentCloudInfo.GetFilesInCurrentDir();
@@ -246,7 +246,7 @@ namespace Cloud_Manager
             // If previous path is the any cloud's root
             else if (PreviousPath == '/' + _currentCloudInfo.Name)
             {
-                _currentCloudInfo.CurrentDir = new FileStructure() { Name = "Root" };
+                _currentCloudInfo.CurrentDir = new FileStructure { Name = "Root" };
                 string tmp = PreviousPath;
                 PreviousPath = CurrentPath;
                 CurrentPath = tmp;
@@ -255,7 +255,7 @@ namespace Cloud_Manager
             // If previous path is the any cloud's trashed files
             else if (PreviousPath == '/' + _currentCloudInfo.Name + "/Trash")
             {
-                _currentCloudInfo.CurrentDir = new FileStructure() { Name = "Trash" };
+                _currentCloudInfo.CurrentDir = new FileStructure { Name = "Trash" };
                 string tmp = PreviousPath;
                 PreviousPath = CurrentPath;
                 CurrentPath = tmp;

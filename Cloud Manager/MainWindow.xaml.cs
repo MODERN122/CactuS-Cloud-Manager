@@ -41,7 +41,7 @@ namespace Cloud_Manager
             {
                 if (_cloudManagerLogic.CurrentPath != "/")
                 {
-                    value.Insert(0, new FileStructure(){Name = ".."});
+                    value.Insert(0, new FileStructure {Name = ".."});
                 }
                 _folderItems = value;
                 OnPropertyChanged("FolderItems");

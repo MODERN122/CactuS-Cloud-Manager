@@ -32,7 +32,7 @@ namespace Cloud_Manager.Managers
             _pathName = "profile\\" + name + ".token_response";
             _credential = GetCredentials();
 
-            Service = new DriveService(new BaseClientService.Initializer()
+            Service = new DriveService(new BaseClientService.Initializer
             {
                 HttpClientInitializer = _credential,
                 ApplicationName = MainWindow.WindowName,
@@ -75,7 +75,7 @@ namespace Cloud_Manager.Managers
         }
         public override void DownloadFile(string name, string id)
         {
-            var saveDialog = new SaveFileDialog()
+            var saveDialog = new SaveFileDialog
             {
                 FileName = name,
                 Filter = "All files (*.*)|*.*"
@@ -131,7 +131,7 @@ namespace Cloud_Manager.Managers
                 }
                 string shortFileName = openFileDialog.FileName;
                 shortFileName = shortFileName.Substring(shortFileName.LastIndexOf('\\', shortFileName.Length - 2) + 1);
-                var file = new Google.Apis.Drive.v3.Data.File()
+                var file = new Google.Apis.Drive.v3.Data.File
                 {
                     Name = shortFileName,
                     Parents = FolderItems[0].Parents,
@@ -169,10 +169,10 @@ namespace Cloud_Manager.Managers
         public override void CreateFolder(string name, FileStructure parentDir)
         {
             string parent = MainWindow.WindowObject.FolderItems[0].Parents[0];
-            var fileMetaData = new Google.Apis.Drive.v3.Data.File()
+            var fileMetaData = new Google.Apis.Drive.v3.Data.File
             {
                 Name = name,
-                Parents = new List<string>() { parent },
+                Parents = new List<string> { parent },
                 MimeType = "application/vnd.google-apps.folder",
             };
             Service.Files.Create(fileMetaData).Execute();
@@ -240,7 +240,7 @@ namespace Cloud_Manager.Managers
                         fileList.Add(item);
                     }
                 }
-                fileList.Add(new Google.Apis.Drive.v3.Data.File() { Name = "Trash", Parents = new List<string>() { Root }, Trashed = false });
+                fileList.Add(new Google.Apis.Drive.v3.Data.File { Name = "Trash", Parents = new List<string>() { Root }, Trashed = false });
             }
             else
             {

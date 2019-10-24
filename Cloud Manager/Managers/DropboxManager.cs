@@ -209,7 +209,7 @@ namespace Cloud_Manager.Managers
         /// <returns></returns>
         public override void DownloadFile(string name, string id)
         {
-            var saveDialog = new SaveFileDialog()
+            var saveDialog = new SaveFileDialog
             {
                 FileName = name,
                 Filter = "All files (*.*)|*.*"

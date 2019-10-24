@@ -249,10 +249,9 @@ namespace Cloud_Manager
 
         public int CompareTo(object obj)
         {
-            FileStructure file = obj as FileStructure;
-            if (file != null)
+            if (obj is FileStructure file)
             {
-                return String.Compare(Name, file.Name, StringComparison.Ordinal);
+                return String.Compare(Name, file.Name, StringComparison.OrdinalIgnoreCase);
             }
             throw new ArgumentException("Not possible to compare these objects");
         }
