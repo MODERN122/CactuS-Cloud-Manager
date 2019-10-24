@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using Cloud_Manager.Managers;
 using Cloud_Manager.Properties;
 
 namespace Cloud_Manager
@@ -68,6 +69,11 @@ namespace Cloud_Manager
         {
             PropertyChangedEventHandler handler = PropertyChanged;
             handler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void Refresh()
+        {
+            refresh_Click(null, null);
         }
 
         private void refresh_Click(object sender, RoutedEventArgs e)
@@ -272,9 +278,14 @@ namespace Cloud_Manager
             Settings.Default.Save();
         }
 
+        public delegate void AddCloud(string name, CloudManagerType type);
+
         private void addCloud_Click(object sender, RoutedEventArgs e)
         {
-            throw new System.NotImplementedException();
+            AddCloud method = _cloudManagerLogic.AddCloud;
+            var addCloudWindow = new AddCloudWindow(method, _cloudManagerLogic.CloudList);
+            IsEnabled = false;
+            addCloudWindow.Show();
         }
 
         private void renameCloud_Click(object sender, RoutedEventArgs e)
