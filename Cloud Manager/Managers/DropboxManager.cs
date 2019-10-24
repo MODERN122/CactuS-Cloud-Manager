@@ -233,9 +233,10 @@ namespace Cloud_Manager.Managers
         }
 
         /// <summary>
-        /// 
+        /// Uploads a file into specified directory.
         /// </summary>
-        /// <param name="curDir"></param>
+        /// <param name="curDir">A directory, where the file will be uploaded</param>
+        /// <returns></returns>
         public override void UploadFile(FileStructure curDir)
         {
             var openFileDialog = new OpenFileDialog {Filter = "All files (*.*)|*.*", FileName = ""};
@@ -249,6 +250,11 @@ namespace Cloud_Manager.Managers
             }
         }
 
+        /// <summary>
+        /// Paste files into specified directory.
+        /// </summary>
+        /// <param name="cutFiles">A list of files, which will be pasted</param>
+        /// <param name="curDir">A directory, where files will be pasted</param>
         public override void PasteFiles(ICollection<FileStructure> cutFiles, FileStructure curDir)
         {
             string path = curDir.Path;
@@ -267,6 +273,11 @@ namespace Cloud_Manager.Managers
             }
         }
 
+        /// <summary>
+        /// Creates a new directory.
+        /// </summary>
+        /// <param name="name">A name of the new directory</param>
+        /// <param name="parentDir">A directory, where the new folder will be created</param>
         public override void CreateFolder(string name, FileStructure parentDir)
         {
             string path = parentDir.Path;
@@ -282,6 +293,10 @@ namespace Cloud_Manager.Managers
             }
         }
 
+        /// <summary>
+        /// Moves files into the trash directory.
+        /// </summary>
+        /// <param name="selectedFiles">A list of files, that will be deleted (into the trash)</param>
         public override void RemoveFile(ICollection<FileStructure> selectedFiles)
         {
             var list = _dbx.Files.ListFolderAsync(string.Empty, true);
@@ -299,21 +314,36 @@ namespace Cloud_Manager.Managers
 
         }
 
+        /// <summary>
+        /// Moves files into the trash directory.
+        /// </summary>
+        /// <param name="selectedFiles">A list of files, that will be deleted (into the trash)</param>
         public override void TrashFile(ICollection<FileStructure> selectedFiles)
         {
             RemoveFile(selectedFiles);
         }
 
+        /// <summary>
+        /// There is no access to trash from .NET API
+        /// </summary>
         public override void UnTrashFile(ICollection<FileStructure> selectedFiles)
         {
-            // There is no access to trash from .NET API
+
         }
 
+        /// <summary>
+        /// There is no access to trash from .NET API
+        /// </summary>
         public override void ClearTrash()
         {
-            // There is no access to trash from .NET API
+
         }
 
+        /// <summary>
+        /// Renames a file.
+        /// </summary>
+        /// <param name="selectedFiles">Selected file that will be renamed</param>
+        /// <param name="newName">A new name of the selected file.</param>
         public override void RenameFile(ICollection<FileStructure> selectedFiles, string newName)
         {
             var list = _dbx.Files.ListFolderAsync(string.Empty, true).Result;
@@ -333,7 +363,10 @@ namespace Cloud_Manager.Managers
             }
         }
 
-
+        /// <summary>
+        /// Gets file information.
+        /// </summary>
+        /// <returns>A list of files.</returns>
         public override ObservableCollection<FileStructure> GetFiles()
         {
             var task = Task.Run(() => GetFolderFiles());
@@ -342,7 +375,6 @@ namespace Cloud_Manager.Managers
             
             return FileStructure.Convert(files);
         }
-
 
         private async Task<List<Metadata>> GetFolderFiles(string path = "")
         {
