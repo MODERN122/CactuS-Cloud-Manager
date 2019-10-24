@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
 
 namespace Cloud_Manager
@@ -102,5 +103,12 @@ namespace Cloud_Manager
                     return 1024 * 1024 * 1024 * size;
             }
         }
+
+        private void SearchWindow_Closing(object sender, CancelEventArgs cancelEventArgs)
+        {
+            MainWindow.WindowObject.IsEnabled = true;
+        }
     }
+
+    
 }
