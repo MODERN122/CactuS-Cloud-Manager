@@ -213,4 +213,34 @@
   <data name="SearchButton" xml:space="preserve">
     <value>Поиск</value>
   </data>
+  <data name="SearchWindowAllClouds" xml:space="preserve">
+    <value>Все облака</value>
+  </data>
+  <data name="SearchWindowCloud" xml:space="preserve">
+    <value>Облако</value>
+  </data>
+  <data name="SearchWindowDate" xml:space="preserve">
+    <value>Дата посл. изм.</value>
+  </data>
+  <data name="SearchWindowDateAfter" xml:space="preserve">
+    <value>После</value>
+  </data>
+  <data name="SearchWindowDateBefore" xml:space="preserve">
+    <value>До</value>
+  </data>
+  <data name="SearchWindowGreater" xml:space="preserve">
+    <value>&gt;</value>
+  </data>
+  <data name="SearchWindowLess" xml:space="preserve">
+    <value>&lt;</value>
+  </data>
+  <data name="SearchWindowName" xml:space="preserve">
+    <value>Имя файла</value>
+  </data>
+  <data name="SearchWindowSearch" xml:space="preserve">
+    <value>Поиск</value>
+  </data>
+  <data name="SearchWindowSize" xml:space="preserve">
+    <value>Размер файла</value>
+  </data>
 </root>

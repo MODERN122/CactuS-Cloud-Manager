@@ -18,7 +18,7 @@ namespace Cloud_Manager
             _clouds = new List<CloudInfo>(clouds);
             InitializeComponent();
             _clouds.Reverse();
-            _clouds.Add(new CloudInfo { Name = "All clouds" });
+            _clouds.Add(new CloudInfo { Name = Properties.Resources.SearchWindowAllClouds });
             _clouds.Reverse();
 
             ComboBoxDate.SelectedIndex = 0;
@@ -32,8 +32,8 @@ namespace Cloud_Manager
         private void Search_Click(object sender, RoutedEventArgs e)
         {
             string nameOfFile = TbFileName.Text;
-            string cloudName = (ComboBoxClouds.SelectionBoxItem as CloudInfo)?.Name == "All clouds"
-                ? "All clouds"
+            string cloudName = (ComboBoxClouds.SelectionBoxItem as CloudInfo)?.Name == Properties.Resources.SearchWindowAllClouds
+                ? Properties.Resources.SearchWindowAllClouds
                 : (ComboBoxClouds.SelectionBoxItem as CloudInfo)?.Name;
 
             int minSize = TbSizeAbove.Text == "" ? 0 : Int32.Parse(TbSizeAbove.Text);
@@ -53,9 +53,10 @@ namespace Cloud_Manager
             maxSize = ConvertToBytes(maxSize, cbIndex2);
 
             List<FileStructure> files = new List<FileStructure>();
-            if (cloudName != "All clouds")
+            if (cloudName != Properties.Resources.SearchWindowAllClouds)
             {
-                List<FileStructure> tmpFiles = (ComboBoxClouds.SelectionBoxItem as CloudInfo)?.SearchFiles(nameOfFile, minSize, maxSize, date,
+                List<FileStructure> tmpFiles = (ComboBoxClouds.SelectionBoxItem 
+                    as CloudInfo)?.SearchFiles(nameOfFile, minSize, maxSize, date,
                     isBeforeDate);
                 if (tmpFiles != null)
                 {
@@ -70,7 +71,7 @@ namespace Cloud_Manager
             {
                 foreach (var item in _clouds)
                 {
-                    if (item.Name != "All clouds")
+                    if (item.Name != Properties.Resources.SearchWindowAllClouds)
                     {
                         List<FileStructure> tmpFiles = item.SearchFiles(nameOfFile, minSize, maxSize, date, isBeforeDate);
                         foreach (var file in tmpFiles)

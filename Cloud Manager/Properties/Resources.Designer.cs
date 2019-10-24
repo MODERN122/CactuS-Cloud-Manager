@@ -304,6 +304,96 @@ namespace Cloud_Manager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All clouds.
+        /// </summary>
+        public static string SearchWindowAllClouds {
+            get {
+                return ResourceManager.GetString("SearchWindowAllClouds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cloud.
+        /// </summary>
+        public static string SearchWindowCloud {
+            get {
+                return ResourceManager.GetString("SearchWindowCloud", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Last mod. date.
+        /// </summary>
+        public static string SearchWindowDate {
+            get {
+                return ResourceManager.GetString("SearchWindowDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to After.
+        /// </summary>
+        public static string SearchWindowDateAfter {
+            get {
+                return ResourceManager.GetString("SearchWindowDateAfter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Before.
+        /// </summary>
+        public static string SearchWindowDateBefore {
+            get {
+                return ResourceManager.GetString("SearchWindowDateBefore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &gt;.
+        /// </summary>
+        public static string SearchWindowGreater {
+            get {
+                return ResourceManager.GetString("SearchWindowGreater", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;.
+        /// </summary>
+        public static string SearchWindowLess {
+            get {
+                return ResourceManager.GetString("SearchWindowLess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string SearchWindowName {
+            get {
+                return ResourceManager.GetString("SearchWindowName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search.
+        /// </summary>
+        public static string SearchWindowSearch {
+            get {
+                return ResourceManager.GetString("SearchWindowSearch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File size.
+        /// </summary>
+        public static string SearchWindowSize {
+            get {
+                return ResourceManager.GetString("SearchWindowSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Size.
         /// </summary>
         public static string SizeHeader {

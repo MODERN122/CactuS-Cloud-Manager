@@ -3,16 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:res="clr-namespace:Cloud_Manager.Properties"
         mc:Ignorable="d"
         Title="SearchWindow" Height="263.2" Width="500"
         Closing="SearchWindow_OnClosing">
     <Grid>
-        <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Имя" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="{x:Static res:Resources.SearchWindowName}" VerticalAlignment="Top"/>
         <TextBox Name="TbFileName" HorizontalAlignment="Left" Height="26" Margin="123,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="241"/>
-
-        <TextBlock HorizontalAlignment="Left" Margin="10,80.444,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="Размер файла"/>
-        <TextBlock HorizontalAlignment="Left" Height="17" Margin="123,80,0,0" TextWrapping="Wrap" Text="От" VerticalAlignment="Top" Width="20" RenderTransformOrigin="0.68,1.918"/>
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="До" VerticalAlignment="Top" Margin="316,81,0,0"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,80.444,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Text="{x:Static res:Resources.SearchWindowSize}"/>
+        <TextBlock HorizontalAlignment="Left" Height="17" Margin="132,83,0,0" TextWrapping="Wrap" Text="{x:Static res:Resources.SearchWindowGreater}" VerticalAlignment="Top" Width="11" RenderTransformOrigin="0.68,1.918"/>
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{x:Static res:Resources.SearchWindowLess}" VerticalAlignment="Top" Margin="316,83,0,0" Width="14"/>
         <TextBox Name="TbSizeAbove" HorizontalAlignment="Left" Height="22" Margin="148,80,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="76"/>
         <TextBox Name="TbSizeLess" HorizontalAlignment="Left" Height="22" Margin="336,80,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="68"/>
         <ComboBox Name="ComboBoxGreater" HorizontalAlignment="Left" Margin="241,81,0,0" VerticalAlignment="Top" Width="49">
@@ -28,18 +28,18 @@
             <ComboBoxItem Content="GB"/>
         </ComboBox>
 
-        <TextBlock HorizontalAlignment="Left" Margin="10,141,0,0" TextWrapping="Wrap" Text="Дата изменения" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,141,0,0" TextWrapping="Wrap" Text="{x:Static res:Resources.SearchWindowDate}" VerticalAlignment="Top"/>
         <ComboBox  Name="ComboBoxDate" HorizontalAlignment="Left" Margin="114,139,0,0" VerticalAlignment="Top" Width="50">
-            <ComboBoxItem Content="До" />
-            <ComboBoxItem Content="После"/>
+            <ComboBoxItem Content="{x:Static res:Resources.SearchWindowDateBefore}" />
+            <ComboBoxItem Content="{x:Static res:Resources.SearchWindowDateAfter}"/>
         </ComboBox>
         <DatePicker Name="DatePickerModification" HorizontalAlignment="Left" Margin="179,137,0,0" VerticalAlignment="Top"/>
 
 
-        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="Облако" VerticalAlignment="Top" Margin="10,187,0,0" />
+        <TextBlock HorizontalAlignment="Left" TextWrapping="Wrap" Text="{x:Static res:Resources.SearchWindowCloud}" VerticalAlignment="Top" Margin="10,187,0,0" />
         <ComboBox Name="ComboBoxClouds" HorizontalAlignment="Left" Margin="89,187,0,0" VerticalAlignment="Top" Width="192"/>
-        
-        <Button Content="Поиск" HorizontalAlignment="Left" Margin="316,134,0,0" VerticalAlignment="Top" Width="159" Height="75" Click="Search_Click"/>
+
+        <Button Content="{x:Static res:Resources.SearchWindowSearch}" HorizontalAlignment="Left" Margin="316,134,0,0" VerticalAlignment="Top" Width="159" Height="75" Click="Search_Click"/>
 
     </Grid>
 </Window>

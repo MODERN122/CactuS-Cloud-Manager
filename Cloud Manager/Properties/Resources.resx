@@ -213,4 +213,34 @@
   <data name="SearchButton" xml:space="preserve">
     <value>Search</value>
   </data>
+  <data name="SearchWindowAllClouds" xml:space="preserve">
+    <value>All clouds</value>
+  </data>
+  <data name="SearchWindowCloud" xml:space="preserve">
+    <value>Cloud</value>
+  </data>
+  <data name="SearchWindowDate" xml:space="preserve">
+    <value>Last mod. date</value>
+  </data>
+  <data name="SearchWindowDateAfter" xml:space="preserve">
+    <value>After</value>
+  </data>
+  <data name="SearchWindowDateBefore" xml:space="preserve">
+    <value>Before</value>
+  </data>
+  <data name="SearchWindowGreater" xml:space="preserve">
+    <value>&gt;</value>
+  </data>
+  <data name="SearchWindowLess" xml:space="preserve">
+    <value>&lt;</value>
+  </data>
+  <data name="SearchWindowName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="SearchWindowSearch" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="SearchWindowSize" xml:space="preserve">
+    <value>File size</value>
+  </data>
 </root>
