@@ -16,8 +16,8 @@ namespace Cloud_Manager.Managers
     class DropboxManager : CloudDrive
     {
         #region Variables
-        static DropboxClient _dbx;
-        private string _pathName;
+        private DropboxClient _dbx;
+        private readonly string _pathName;
         private string _appKey;
         private string _loopbackHost;
         private Uri _redirectUri;
@@ -25,12 +25,18 @@ namespace Cloud_Manager.Managers
         #endregion
 
         #region Constructor
+        /// <summary>
+        /// Initializes a new instance of the <c>DropboxManager</c> class
+        /// </summary>
+        /// <param name="name">Name of the cloud</param>
         public DropboxManager(string name)
         {
             GetAppInfo();
             _pathName = "profile\\" + name + ".token_response";
             if (File.Exists(_pathName))
+            {
                 GetCredentials();
+            }
             else
             {
                 var task = Task.Run(() => Authorize());
@@ -46,6 +52,12 @@ namespace Cloud_Manager.Managers
         #region Properties
         #endregion
 
+        #region Methods
+
+        /// <summary>
+        /// Saves user token into a file for a further login w/o using a browser.
+        /// </summary>
+        /// <param name="token">User token</param>
         private void SaveCredentials(string token)
         {
             using (var stream = new FileStream(_pathName, FileMode.Create)) 
@@ -57,6 +69,9 @@ namespace Cloud_Manager.Managers
             }
         }
 
+        /// <summary>
+        /// Gets user token from a file. 
+        /// </summary>
         private void GetCredentials()
         {
             using (var stream = new FileStream(_pathName, FileMode.Open, FileAccess.Read))
@@ -70,6 +85,9 @@ namespace Cloud_Manager.Managers
             }
         }
 
+        /// <summary>
+        /// Gets an application information from a file. It is needed for requests to user files.
+        /// </summary>
         private void GetAppInfo()
         {
             using (var stream = new FileStream("client_secret_dropbox.json", FileMode.Open, FileAccess.Read))
@@ -86,6 +104,10 @@ namespace Cloud_Manager.Managers
             
         }
 
+        /// <summary>
+        /// Authorizes an application to work with user data. Provides via a browser.
+        /// </summary>
+        /// <returns></returns>
         public async Task<string> Authorize()
         {
             var state = Guid.NewGuid().ToString("N");
@@ -94,16 +116,22 @@ namespace Cloud_Manager.Managers
                 _appKey,
                 _redirectUri,
                 state: state);
-            var http = new HttpListener();
-            http.Prefixes.Add(_loopbackHost);
-            http.Start();
+            OAuth2Response result;
+            using (var http = new HttpListener())
+            {
+                http.Prefixes.Add(_loopbackHost);
+                http.Start();
 
-            System.Diagnostics.Process.Start(authUri.ToString());
+                System.Diagnostics.Process.Start(authUri.ToString());
 
-            await HandleOAuth2Redirect(http);
+                await HandleOAuth2Redirect(http).ConfigureAwait(false);
 
-            // Handle redirect from JS and process OAuth response.
-            var result = await HandleJsRedirect(http);
+                // Handle redirect from JS and process OAuth response.
+                result = await HandleJsRedirect(http).ConfigureAwait(false);
+
+            }
+
+
 
             if (result.State != state)
             {
@@ -154,14 +182,14 @@ namespace Cloud_Manager.Managers
             return result;
         }
 
-        static async Task Download(string name, string id)
+        static async Task Download(string name, string id, DropboxClient dbx)
         {
-            var items = await _dbx.Files.ListFolderAsync(string.Empty, true);
+            var items = await dbx.Files.ListFolderAsync(string.Empty, true);
             foreach (var item in items.Entries)
             {
                 if (item.IsFile && item.AsFile.Id == id)
                 {
-                    using (var response = await _dbx.Files.DownloadAsync(item.PathDisplay))
+                    using (var response = await dbx.Files.DownloadAsync(item.PathDisplay))
                     {
                         var s = response.GetContentAsByteArrayAsync();
                         s.Wait();
@@ -173,51 +201,60 @@ namespace Cloud_Manager.Managers
             }
         }
 
+        /// <summary>
+        /// Downloads a files which id equals parameter id.
+        /// </summary>
+        /// <param name="name">The name of the file</param>
+        /// <param name="id">The id of the file</param>
+        /// <returns></returns>
         public override void DownloadFile(string name, string id)
         {
-            var saveDialog = new SaveFileDialog()
+            var saveDialog = new SaveFileDialog
             {
                 FileName = name,
                 Filter = "All files (*.*)|*.*"
             };
-            if (saveDialog.ShowDialog() != true) return;
+            if (saveDialog.ShowDialog() != true) { return;}
 
             var downloadFileName = saveDialog.FileName;
-            var task = Task.Run(() => Download(downloadFileName, id));
+            var task = Task.Run(() => Download(downloadFileName, id, _dbx));
             task.Wait();
         }
 
-        static async Task Upload(string file, string content)
+        static async Task Upload(string file, string content, DropboxClient dbx)
         {
             using (var mem = new MemoryStream(File.ReadAllBytes(content)))
             {
-                await _dbx.Files.UploadAsync(
+                await dbx.Files.UploadAsync(
                     file,
                     WriteMode.Overwrite.Instance,
                     body: mem);
             }
         }
 
+        /// <summary>
+        /// Uploads a file into specified directory.
+        /// </summary>
+        /// <param name="curDir">A directory, where the file will be uploaded</param>
+        /// <returns></returns>
         public override void UploadFile(FileStructure curDir)
         {
-            var openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "All files (*.*)|*.*";
-            openFileDialog.FileName = "";
+            var openFileDialog = new OpenFileDialog {Filter = "All files (*.*)|*.*", FileName = ""};
             if (openFileDialog.ShowDialog() == true)
             {
-                string mimeType = "application/unknown";
-                string ext = Path.GetExtension(openFileDialog.FileName).ToLower();
-                RegistryKey regKey = Registry.ClassesRoot.OpenSubKey(ext);
-                if (regKey != null && regKey.GetValue("Content Type") != null)
-                    mimeType = regKey.GetValue("Content Type").ToString();
                 string fileName = openFileDialog.FileName;
                 fileName = fileName.Substring(fileName.LastIndexOf('\\', fileName.Length - 2) + 1);
                 fileName = curDir.Path + '/' + fileName;
-                var task = Task.Run(() => Upload(fileName, openFileDialog.FileName)); ;
+                var task = Task.Run(() => Upload(fileName, openFileDialog.FileName, _dbx));
                 task.Wait();
             }
         }
 
+        /// <summary>
+        /// Paste files into specified directory.
+        /// </summary>
+        /// <param name="cutFiles">A list of files, which will be pasted</param>
+        /// <param name="curDir">A directory, where files will be pasted</param>
         public override void PasteFiles(ICollection<FileStructure> cutFiles, FileStructure curDir)
         {
             string path = curDir.Path;
@@ -227,12 +264,20 @@ namespace Cloud_Manager.Managers
             {
                 foreach (var listItem in list.Entries)
                 {
-                    if ((listItem.IsFile && listItem.AsFile.Id == item.Id) || (listItem.IsFolder && listItem.AsFolder.Id == item.Id))
+                    if ((listItem.IsFile && listItem.AsFile.Id == item.Id) ||
+                        (listItem.IsFolder && listItem.AsFolder.Id == item.Id))
+                    {
                         _dbx.Files.MoveV2Async(listItem.PathDisplay, path + "/" + listItem.Name);
+                    }
                 }
             }
         }
 
+        /// <summary>
+        /// Creates a new directory.
+        /// </summary>
+        /// <param name="name">A name of the new directory</param>
+        /// <param name="parentDir">A directory, where the new folder will be created</param>
         public override void CreateFolder(string name, FileStructure parentDir)
         {
             string path = parentDir.Path;
@@ -242,12 +287,16 @@ namespace Cloud_Manager.Managers
             }
             else
             {
-                path = path.Substring(path.IndexOf("/") + 1);
-                path = path.Substring(path.IndexOf("/"));
+                path = path.Substring(path.IndexOf("/", StringComparison.Ordinal) + 1);
+                path = path.Substring(path.IndexOf("/", StringComparison.Ordinal));
                 _dbx.Files.CreateFolderV2Async(path + "/" + name);
             }
         }
 
+        /// <summary>
+        /// Moves files into the trash directory.
+        /// </summary>
+        /// <param name="selectedFiles">A list of files, that will be deleted (into the trash)</param>
         public override void RemoveFile(ICollection<FileStructure> selectedFiles)
         {
             var list = _dbx.Files.ListFolderAsync(string.Empty, true);
@@ -255,55 +304,77 @@ namespace Cloud_Manager.Managers
             {
                 foreach (var listItem in list.Result.Entries)
                 {
-                    if ((listItem.IsFile && listItem.AsFile.Id == selectedItem.Id) || (listItem.IsFolder && listItem.AsFolder.Id == selectedItem.Id))
+                    if ((listItem.IsFile && listItem.AsFile.Id == selectedItem.Id) ||
+                        (listItem.IsFolder && listItem.AsFolder.Id == selectedItem.Id))
+                    {
                         _dbx.Files.DeleteV2Async(listItem.PathDisplay);
+                    }
                 }
             }
 
         }
 
+        /// <summary>
+        /// Moves files into the trash directory.
+        /// </summary>
+        /// <param name="selectedFiles">A list of files, that will be deleted (into the trash)</param>
         public override void TrashFile(ICollection<FileStructure> selectedFiles)
         {
             RemoveFile(selectedFiles);
         }
 
+        /// <summary>
+        /// There is no access to trash from .NET API
+        /// </summary>
         public override void UnTrashFile(ICollection<FileStructure> selectedFiles)
         {
-            // There is no access to trash from .NET API
+
         }
 
+        /// <summary>
+        /// There is no access to trash from .NET API
+        /// </summary>
         public override void ClearTrash()
         {
-            // There is no access to trash from .NET API
+
         }
 
+        /// <summary>
+        /// Renames a file.
+        /// </summary>
+        /// <param name="selectedFiles">Selected file that will be renamed</param>
+        /// <param name="newName">A new name of the selected file.</param>
         public override void RenameFile(ICollection<FileStructure> selectedFiles, string newName)
         {
             var list = _dbx.Files.ListFolderAsync(string.Empty, true).Result;
             foreach (var listItem in list.Entries)
             {
-                if ((listItem.IsFile && listItem.AsFile.Id == selectedFiles.First<FileStructure>().Id)
-                    || (listItem.IsFolder && listItem.AsFolder.Id == selectedFiles.First<FileStructure>().Id))
+                if ((listItem.IsFile && listItem.AsFile.Id == selectedFiles.First().Id)
+                    || (listItem.IsFolder && listItem.AsFolder.Id == selectedFiles.First().Id))
                 {
                     var path = listItem.PathDisplay;
-                    path = path.Substring(0, path.LastIndexOf("/"));
+                    path = path.Substring(0, path.LastIndexOf("/", StringComparison.Ordinal));
                     if (listItem.Name.IndexOf('.') >= 0)
+                    {
                         newName += listItem.Name.Substring(listItem.Name.LastIndexOf('.'));
+                    }
                     _dbx.Files.MoveV2Async(listItem.PathDisplay, path + "/" + newName);
                 }
             }
         }
 
-
+        /// <summary>
+        /// Gets file information.
+        /// </summary>
+        /// <returns>A list of files.</returns>
         public override ObservableCollection<FileStructure> GetFiles()
         {
-            var task = Task.Run(() => this.GetFolderFiles());
+            var task = Task.Run(() => GetFolderFiles());
             task.Wait();
             var files = task.Result;
             
             return FileStructure.Convert(files);
         }
-
 
         private async Task<List<Metadata>> GetFolderFiles(string path = "")
         {
@@ -311,4 +382,7 @@ namespace Cloud_Manager.Managers
             return new List<Metadata>(result.Entries);
         }
     }
+
+
+    #endregion
 }

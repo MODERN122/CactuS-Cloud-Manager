@@ -10,40 +10,22 @@ namespace Cloud_Manager
 {
     public sealed partial class MainWindow : INotifyPropertyChanged
     {
-        public static string windowName = "Cloud Manager";
+        public static string WindowName { get; } = "Cloud Manager";
 
-        public static MainWindow mainWindow;
+        public static MainWindow WindowObject { get; private set; }
 
         private readonly CloudManagerLogic _cloudManagerLogic;
 
         // Buttons availability
-        public bool IsDriveOpened
-        {
-            get { return _cloudManagerLogic.CurrentPath != "/"; }
-        }
+        public bool IsDriveOpened => _cloudManagerLogic.CurrentPath != "/";
 
-        public bool IsExistItems
-        {
-            get
-            {
-                return _cloudManagerLogic.CutItems.Any() && _cloudManagerLogic.CurrentPath != "/";
-            }
-        }
+        public bool IsExistItems => _cloudManagerLogic.CutItems.Any() && _cloudManagerLogic.CurrentPath != "/";
 
-        public bool IsSingleSelected
-        {
-            get { return _cloudManagerLogic.SelectedItems.Count() == 1 && _cloudManagerLogic.CurrentPath != "/"; }
-        }
+        public bool IsSingleSelected => _cloudManagerLogic.SelectedItems.Count() == 1 && _cloudManagerLogic.CurrentPath != "/";
 
-        public bool IsSelected
-        {
-            get { return _cloudManagerLogic.SelectedItems.Count > 0 && _cloudManagerLogic.CurrentPath != "/"; }
-        }
+        public bool IsSelected => _cloudManagerLogic.SelectedItems.Count > 0 && _cloudManagerLogic.CurrentPath != "/";
 
-        public bool IsSelectedInTrash
-        {
-            get { return _cloudManagerLogic.SelectedItems.Count > 0 &&  _cloudManagerLogic.CurrentPath.Substring(_cloudManagerLogic.CurrentPath.LastIndexOf('/')) == "/Trash"; }
-        }
+        public bool IsSelectedInTrash => _cloudManagerLogic.SelectedItems.Count > 0 &&  _cloudManagerLogic.CurrentPath.Substring(_cloudManagerLogic.CurrentPath.LastIndexOf('/')) == "/Trash";
 
         public bool IsDownloadAvailable
         {
@@ -51,24 +33,22 @@ namespace Cloud_Manager
         }
 
 
-        private ObservableCollection<FileStructure> folderItems;
+        private ObservableCollection<FileStructure> _folderItems;
         public ObservableCollection<FileStructure> FolderItems
         {
-            get
-            {
-                return this.folderItems;
-            }
+            get => _folderItems;
             set
             {
-                this.folderItems = value;
+                if (_cloudManagerLogic.CurrentPath != "/")
+                {
+                    value.Insert(0, new FileStructure {Name = ".."});
+                }
+                _folderItems = value;
                 OnPropertyChanged("FolderItems");
             }
         }
 
-        public string WindowTitle
-        {
-            get { return string.Format("{0} - {1}", windowName, _cloudManagerLogic.CurrentPath); }
-        }
+        public string WindowTitle => $"{WindowName} - {_cloudManagerLogic.CurrentPath}";
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -79,15 +59,15 @@ namespace Cloud_Manager
             InitializeComponent();
             DataContext = this;
             OnPropertyChanged("WindowTitle");
-            mainWindow = this;
+            WindowObject = this;
 
             FolderItems = _cloudManagerLogic.InitStartFolder();
         }
 
         public void OnPropertyChanged(string propertyName)
         {
-            PropertyChangedEventHandler handler = this.PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+            PropertyChangedEventHandler handler = PropertyChanged;
+            handler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private void refresh_Click(object sender, RoutedEventArgs e)
@@ -141,13 +121,13 @@ namespace Cloud_Manager
 
         private void makeDir_Click(object sender, RoutedEventArgs e)
         {
-            this.popupNewFolder.IsOpen = true;
+            PopupNewFolder.IsOpen = true;
         }
 
         private void createFolder_Click(object sender, RoutedEventArgs e)
         {
-            popupNewFolder.IsOpen = false;
-            _cloudManagerLogic.CreateFolder(txtNewFolderName.Text);
+            PopupNewFolder.IsOpen = false;
+            _cloudManagerLogic.CreateFolder(TxtNewFolderName.Text);
             FolderItems = _cloudManagerLogic.RefreshInfo();
             NotifyMenuItems();
         }
@@ -182,13 +162,13 @@ namespace Cloud_Manager
 
         private void rename_Click(object sender, RoutedEventArgs e)
         {
-            this.popupRenameFile.IsOpen = true;
+            PopupRenameFile.IsOpen = true;
         }
 
         private void renameFile_Click(object sender, RoutedEventArgs e)
         {
-            mainWindow.popupNewFolder.IsOpen = false;
-            _cloudManagerLogic.RenameFile(txtRenamedFile.Text);
+            WindowObject.PopupRenameFile.IsOpen = false;
+            _cloudManagerLogic.RenameFile(TxtRenamedFile.Text);
             FolderItems = _cloudManagerLogic.RefreshInfo();
             NotifyMenuItems();
         }
@@ -229,20 +209,28 @@ namespace Cloud_Manager
 
         private void gridItems_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            FileStructure item = this.gridItems.SelectedItem as FileStructure;
+            FileStructure item = GridItems.SelectedItem as FileStructure;
 
             if (item == null)
+            {
                 return;
+            }
 
-            FolderItems = _cloudManagerLogic.EnterFile(item);
-
-            NotifyMenuItems();
+            if (item.Name == "..")
+            {
+                goUp_Click(this, null);
+            }
+            else
+            {
+                FolderItems = _cloudManagerLogic.EnterFile(item);
+                NotifyMenuItems();
+            }
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             var menuItem = sender as MenuItem;
-            switch (menuItem.Header.ToString())
+            switch (menuItem?.Header.ToString())
             {
                 case "English":
                     ChangeLanguage("en-US");
@@ -252,6 +240,9 @@ namespace Cloud_Manager
                 case "Русский":
                     ChangeLanguage("ru-RU");
                     MessageBox.Show("Программа сменит язык после рестарта.");
+                    break;
+                default:
+                    MessageBox.Show("Unexpected error. Restart the program.");
                     break;
             }
         }
@@ -283,7 +274,7 @@ namespace Cloud_Manager
 
         private void addCloud_Click(object sender, RoutedEventArgs e)
         {
-
+            throw new System.NotImplementedException();
         }
 
         private void renameCloud_Click(object sender, RoutedEventArgs e)
@@ -304,6 +295,13 @@ namespace Cloud_Manager
         private void MainWindow_Closing(object sender, CancelEventArgs cancelEventArgs)
         {
             _cloudManagerLogic.SaveInfo();
+        }
+
+        private void search_Click(object sender, RoutedEventArgs e)
+        {
+            var searchWindow = new SearchWindow(_cloudManagerLogic.CloudList);
+            IsEnabled = false;
+            searchWindow.Show();
         }
     }
 }

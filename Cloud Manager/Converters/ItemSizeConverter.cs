@@ -9,7 +9,9 @@ namespace Cloud_Manager.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null)
-                return "-";    
+            {
+                return "-";
+            }    
             int tmp = int.Parse(value.ToString());
 
             if (tmp > 1024)
@@ -24,10 +26,14 @@ namespace Cloud_Manager.Converters
                         return tmp + " GB";
                     }
                     else
+                    {
                         return tmp + " MB";
+                    }
                 }
                 else
+                {
                     return tmp + " KB";
+                }
             }
             else
             {

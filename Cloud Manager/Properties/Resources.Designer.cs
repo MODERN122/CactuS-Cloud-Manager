@@ -295,6 +295,15 @@ namespace Cloud_Manager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Search.
+        /// </summary>
+        public static string SearchButton {
+            get {
+                return ResourceManager.GetString("SearchButton", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Size.
         /// </summary>
         public static string SizeHeader {

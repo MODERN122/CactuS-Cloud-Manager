@@ -4,22 +4,21 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:converters="clr-namespace:Cloud_Manager.Converters"
-        xmlns:local="clr-namespace:Cloud_Manager"
         xmlns:res="clr-namespace:Cloud_Manager.Properties"
         mc:Ignorable="d"
         Title="{Binding WindowTitle}" Height="485" Width="800"
         Closing="MainWindow_Closing">
     <Window.Resources>
-        <converters:ItemSizeConverter x:Key="itemSizeConverter"/>
+        <converters:ItemSizeConverter x:Key="ItemSizeConverter"/>
 
-        <Style x:Key="popupBorderStyle" TargetType="Border">
+        <Style x:Key="PopupBorderStyle" TargetType="Border">
             <Setter Property="BorderBrush" Value="Gray"/>
             <Setter Property="Background" Value="LightBlue"/>
             <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="Padding" Value="10"/>
         </Style>
 
-        <Style x:Key="buttonStyle" TargetType="Button">
+        <Style x:Key="ButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="75"/>
             <Setter Property="Height" Value="30"/>
         </Style>
@@ -32,23 +31,25 @@
                 <MenuItem Header="{x:Static res:Resources.RenameCloudMenuItem}" Click="renameCloud_Click"/>
                 <MenuItem Header="{x:Static res:Resources.RemoveCloudMenuItem}" Click="removeCloud_Click"/>
                 <Separator/>
-                <MenuItem Header="{x:Static res:Resources.ClrTrashButton}" Click="clearTrash_Click"/>
+                <MenuItem Header="{x:Static res:Resources.MakeDirButton}" IsEnabled="{Binding IsDriveOpened}" Click="makeDir_Click"></MenuItem>
+                <Separator/>
+                <MenuItem Header="{x:Static res:Resources.ClrTrashButton}" IsEnabled="{Binding IsDriveOpened}" Click="clearTrash_Click"/>
 
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.FileMenu}">
-                <MenuItem Header="{x:Static res:Resources.DownloadButton}" Click="download_Click"/>
-                <MenuItem Header="{x:Static res:Resources.UploadButton}" Click="upload_Click"/>
+                <MenuItem Header="{x:Static res:Resources.DownloadButton}" IsEnabled="{Binding IsDownloadAvailable}" Click="download_Click"/>
+                <MenuItem Header="{x:Static res:Resources.UploadButton}" IsEnabled="{Binding IsDriveOpened}" Click="upload_Click"/>
                 <Separator/>
-                <MenuItem Header="{x:Static res:Resources.RemoveButton}" Click="remove_Click"/>
-                <MenuItem Header="{x:Static res:Resources.TrashButton}" Click="trash_Click"/>
-                <MenuItem Header="{x:Static res:Resources.UntrashButton}" Click="untrash_Click"/>
+                <MenuItem Header="{x:Static res:Resources.RemoveButton}" IsEnabled="{Binding IsSelected}" Click="remove_Click"/>
+                <MenuItem Header="{x:Static res:Resources.TrashButton}" IsEnabled="{Binding IsSelected}" Click="trash_Click"/>
+                <MenuItem Header="{x:Static res:Resources.UntrashButton}" IsEnabled="{Binding IsSelectedInTrash}" Click="untrash_Click"/>
                 <Separator/>
-                <MenuItem Header="{x:Static res:Resources.RenameButton}" Click="rename_Click"/>
+                <MenuItem Header="{x:Static res:Resources.RenameButton}" IsEnabled="{Binding IsSingleSelected}" Click="rename_Click"/>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.EditMenu}">
-                <MenuItem Header="{x:Static res:Resources.CutButton}" Click="cut_Click"/>
+                <MenuItem Header="{x:Static res:Resources.CutButton}" IsEnabled="{Binding IsSelected}" Click="cut_Click"/>
                 <MenuItem Header="{x:Static res:Resources.CopyButton}" Click="copy_Click"/>
-                <MenuItem Header="{x:Static res:Resources.PasteButton}" Click="paste_Click"/>
+                <MenuItem Header="{x:Static res:Resources.PasteButton}" IsEnabled="{Binding IsExistItems}" Click="paste_Click"/>
             </MenuItem>
             <MenuItem Header="{x:Static res:Resources.OptionsMenu}">
                 <MenuItem Header="{x:Static res:Resources.LanguageMenuItem}">
@@ -56,6 +57,7 @@
                     <MenuItem Header="Русский" Click="MenuItem_Click"/>
                 </MenuItem>
             </MenuItem>
+            <MenuItem Header="{x:Static res:Resources.SearchButton}" Click="search_Click"/>
         </Menu>
         <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Height="425.16">
             <Grid.RowDefinitions>
@@ -65,63 +67,52 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0" Orientation="Horizontal" Height="30" Margin="0,0,-693.6,0" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <Button Style="{StaticResource buttonStyle}" Content="{x:Static res:Resources.HomeButton}" Click="home_Click"/>
-                <Button Style="{StaticResource buttonStyle}" Content="{x:Static res:Resources.GoUpButton}" Click="goUp_Click"/>
-                <Button Style="{StaticResource buttonStyle}" Content="{x:Static res:Resources.BackButton}" Click="back_Click"/>
-                <Button Style="{StaticResource buttonStyle}" Content="{x:Static res:Resources.RefreshButton}" Click="refresh_Click"/>
+                <Button Style="{StaticResource ButtonStyle}" Content="{x:Static res:Resources.HomeButton}" Click="home_Click"/>
+                <Button Style="{StaticResource ButtonStyle}" Content="{x:Static res:Resources.GoUpButton}" Click="goUp_Click"/>
+                <Button Style="{StaticResource ButtonStyle}" Content="{x:Static res:Resources.BackButton}" Click="back_Click"/>
+                <Button Style="{StaticResource ButtonStyle}" Content="{x:Static res:Resources.RefreshButton}" Click="refresh_Click"/>
             </StackPanel>
 
-            <DataGrid x:Name="gridItems" Grid.Row="1" ItemsSource="{Binding FolderItems}" AutoGenerateColumns="false" 
+            <DataGrid x:Name="GridItems" Grid.Row="1" ItemsSource="{Binding FolderItems}" AutoGenerateColumns="false" 
                   CanUserAddRows="False" IsReadOnly="True" SelectionChanged="gridItems_SelectionChanged" 
                   MouseDoubleClick="gridItems_MouseDoubleClick">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="{x:Static res:Resources.NameHeader}" Width="400" Binding="{Binding Name}"/>
                     <DataGridTextColumn Header="{x:Static res:Resources.TypeHeader}" Width="100" Binding="{Binding FileExtension}"/>
-                    <DataGridTextColumn Header="{x:Static res:Resources.SizeHeader}" Width="150" Binding="{Binding Size, Converter={StaticResource itemSizeConverter}}"/>
+                    <DataGridTextColumn Header="{x:Static res:Resources.SizeHeader}" Width="150" Binding="{Binding Size, Converter={StaticResource ItemSizeConverter}}"/>
                     <DataGridTextColumn Header="{x:Static res:Resources.DateHeader}" Width="125" Binding="{Binding ModifiedByMeTime, StringFormat=MM/dd/yyyy hh:mm}"/>
                 </DataGrid.Columns>
                 <DataGrid.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Header="{x:Static res:Resources.DownloadButton}" Click="download_Click"/>
-                        <MenuItem Header="{x:Static res:Resources.UploadButton}" Click="upload_Click"/>
+                        <MenuItem Header="{x:Static res:Resources.RefreshButton}" Click="refresh_Click"/>
                         <Separator/>
-                        <MenuItem Header="{x:Static res:Resources.CutButton}" Click="cut_Click"/>
+                        <MenuItem Header="{x:Static res:Resources.DownloadButton}" IsEnabled="{Binding IsDownloadAvailable}" Click="download_Click"/>
+                        <MenuItem Header="{x:Static res:Resources.UploadButton}" IsEnabled="{Binding IsDriveOpened}" Click="upload_Click"/>
+                        <Separator/>
+                        <MenuItem Header="{x:Static res:Resources.CutButton}" IsEnabled="{Binding IsSelected}" Click="cut_Click"/>
                         <MenuItem Header="{x:Static res:Resources.CopyButton}" Click="copy_Click"/>
-                        <MenuItem Header="{x:Static res:Resources.PasteButton}" Click="paste_Click"/>
+                        <MenuItem Header="{x:Static res:Resources.PasteButton}" IsEnabled="{Binding IsExistItems}" Click="paste_Click"/>
                         <Separator/>
                         <MenuItem Header="{x:Static res:Resources.RenameButton}" Click="rename_Click"/>
                     </ContextMenu>
                 </DataGrid.ContextMenu>
             </DataGrid>
 
-            <DockPanel Grid.Row="2" VerticalAlignment="Bottom">
-                <DockPanel IsEnabled="{Binding IsLoggedIn}">
-                    <Button Style="{StaticResource buttonStyle}" IsEnabled="{Binding IsDownloadAvailable}" Content="{x:Static res:Resources.DownloadButton}" Click="download_Click" />
-                    <Button Style="{StaticResource buttonStyle}" IsEnabled="{Binding IsDriveOpened}" Content="{x:Static res:Resources.UploadButton}" Click="upload_Click" />
-                    <Button Style="{StaticResource buttonStyle}" IsEnabled="{Binding IsSelected}" Content="{x:Static res:Resources.CutButton}" Click="cut_Click" />
-                    <Button Style="{StaticResource buttonStyle}" IsEnabled="{Binding IsExistItems}" Content="{x:Static res:Resources.PasteButton}" Click="paste_Click" />
-                    <Button Style="{StaticResource buttonStyle}" IsEnabled="{Binding IsDriveOpened}" Content="{x:Static res:Resources.MakeDirButton}" Click="makeDir_Click" />
-                    <Button Style="{StaticResource buttonStyle}" IsEnabled="{Binding IsSelected}" Content="{x:Static res:Resources.RemoveButton}" Click="remove_Click" />
-                    <Button Style="{StaticResource buttonStyle}" IsEnabled="{Binding IsSelected}" Content="{x:Static res:Resources.TrashButton}" Click="trash_Click" />
-                    <Button Style="{StaticResource buttonStyle}" IsEnabled="{Binding IsSelectedInTrash}" Content="{x:Static res:Resources.UntrashButton}" Click="untrash_Click"/>
-                    <Button Style="{StaticResource buttonStyle}" IsEnabled="{Binding IsDriveOpened}" Content="{x:Static res:Resources.ClrTrashButton}" Click="clearTrash_Click"/>
-                    <Button Style="{StaticResource buttonStyle}" IsEnabled="{Binding IsSingleSelected}" Content="{x:Static res:Resources.RenameButton}" Click="rename_Click" HorizontalAlignment="Left"/>
-                </DockPanel>
-            </DockPanel>
 
-            <Popup x:Name="popupNewFolder" StaysOpen="False" Placement="Center" MaxWidth="250" PopupAnimation="Scroll" IsOpen="False">
-                <Border Style="{StaticResource popupBorderStyle}">
+
+            <Popup Grid.Row="0" x:Name="PopupNewFolder" StaysOpen="False" Placement="Center" MaxWidth="250" PopupAnimation="Scroll" IsOpen="False">
+                <Border Style="{StaticResource PopupBorderStyle}">
                     <StackPanel Orientation="Horizontal" Margin="10">
-                        <TextBox x:Name="txtNewFolderName" Text="{x:Static res:Resources.NewFolderNameTextBox}" Width="150"/>
+                        <TextBox x:Name="TxtNewFolderName" Text="{x:Static res:Resources.NewFolderNameTextBox}" Width="150"/>
                         <Button Content="{x:Static res:Resources.CreateButton}" Width="50" Margin="10,0,0,0" Click="createFolder_Click"/>
                     </StackPanel>
                 </Border>
             </Popup>
 
-            <Popup x:Name="popupRenameFile" StaysOpen="False" Placement="Center" MaxWidth="250" PopupAnimation="Scroll" IsOpen="False">
-                <Border Style="{StaticResource popupBorderStyle}">
+            <Popup Grid.Row="0" x:Name="PopupRenameFile" StaysOpen="False" Placement="Center" MaxWidth="250" PopupAnimation="Scroll" IsOpen="False">
+                <Border Style="{StaticResource PopupBorderStyle}">
                     <StackPanel Orientation="Horizontal" Margin="10">
-                        <TextBox x:Name="txtRenamedFile" Text="{x:Static res:Resources.RenamedFilenameTextBox}" Width="150"/>
+                        <TextBox x:Name="TxtRenamedFile" Text="{x:Static res:Resources.RenamedFilenameTextBox}" Width="150"/>
                         <Button Content="{x:Static res:Resources.RenameEnterButton}" Width="50" Margin="10,0,0,0" Click="renameFile_Click"/>
                     </StackPanel>
                 </Border>

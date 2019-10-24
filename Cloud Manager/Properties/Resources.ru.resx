@@ -210,4 +210,7 @@
   <data name="RenameCloudMenuItem" xml:space="preserve">
     <value>Переименовать облако</value>
   </data>
+  <data name="SearchButton" xml:space="preserve">
+    <value>Поиск</value>
+  </data>
 </root>
