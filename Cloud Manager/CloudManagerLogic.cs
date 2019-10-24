@@ -51,7 +51,6 @@ namespace Cloud_Manager
         {
             _cloudList = new List<CloudInfo>();
             GetInfo();
-
             CurrentPath = "/";
             PreviousPath = "/";
         }
@@ -153,7 +152,9 @@ namespace Cloud_Manager
         public ObservableCollection<FileStructure> RefreshInfo()
         {
             if (CurrentPath == "/")
+            {
                 return InitStartFolder();
+            }
             else
             {
                 _currentCloudInfo.Files = _currentCloudInfo.Cloud.GetFiles();

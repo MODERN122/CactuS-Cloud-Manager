@@ -134,14 +134,14 @@ namespace Cloud_Manager
         /// </summary>
         /// <param name="folderItems">A list of GoogleDrive API's files.</param>
         /// <returns>A list of FileStructure files</returns>
-        internal static ObservableCollection<FileStructure> Convert(ObservableCollection<Google.Apis.Drive.v3.Data.File> folderItems)
+        internal static ObservableCollection<FileStructure> Convert(ObservableCollection<Google.Apis.Drive.v3.Data.File> folderItems, string rootFolder)
         {
             ObservableCollection<FileStructure> files = new ObservableCollection<FileStructure>();
             foreach (var item in folderItems)
             {
                 files.Add(new FileStructure(item));
             }
-            files = SetPaths(files);
+            files = SetPaths(files, rootFolder);
             return files;
         }
 
@@ -150,11 +150,11 @@ namespace Cloud_Manager
         /// </summary>
         /// <param name="files"></param>
         /// <returns></returns>
-        private static ObservableCollection<FileStructure> SetPaths(ObservableCollection<FileStructure> files)
+        private static ObservableCollection<FileStructure> SetPaths(ObservableCollection<FileStructure> files, string rootFolder)
         {
             foreach (var item in files)
             {
-                if (item.Parents[0] == GoogleDriveManager.Root)
+                if (item.Parents[0] == rootFolder)
                 {
                     item.IsInRoot = true;
                     item.Path = "/" + item.Name;
@@ -254,7 +254,7 @@ namespace Cloud_Manager
             {
                 return String.Compare(Name, file.Name, StringComparison.Ordinal);
             }
-            throw new Exception("Not possible to compare these objects");
+            throw new ArgumentException("Not possible to compare these objects");
         }
     }
 }

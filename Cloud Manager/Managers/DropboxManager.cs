@@ -16,7 +16,7 @@ namespace Cloud_Manager.Managers
     class DropboxManager : CloudDrive
     {
         #region Variables
-        private static DropboxClient _dbx;
+        private DropboxClient _dbx;
         private readonly string _pathName;
         private string _appKey;
         private string _loopbackHost;
@@ -124,10 +124,10 @@ namespace Cloud_Manager.Managers
 
                 System.Diagnostics.Process.Start(authUri.ToString());
 
-                await HandleOAuth2Redirect(http);
+                await HandleOAuth2Redirect(http).ConfigureAwait(false);
 
                 // Handle redirect from JS and process OAuth response.
-                result = await HandleJsRedirect(http);
+                result = await HandleJsRedirect(http).ConfigureAwait(false);
 
             }
 
@@ -182,14 +182,14 @@ namespace Cloud_Manager.Managers
             return result;
         }
 
-        static async Task Download(string name, string id)
+        static async Task Download(string name, string id, DropboxClient dbx)
         {
-            var items = await _dbx.Files.ListFolderAsync(string.Empty, true);
+            var items = await dbx.Files.ListFolderAsync(string.Empty, true);
             foreach (var item in items.Entries)
             {
                 if (item.IsFile && item.AsFile.Id == id)
                 {
-                    using (var response = await _dbx.Files.DownloadAsync(item.PathDisplay))
+                    using (var response = await dbx.Files.DownloadAsync(item.PathDisplay))
                     {
                         var s = response.GetContentAsByteArrayAsync();
                         s.Wait();
@@ -217,15 +217,15 @@ namespace Cloud_Manager.Managers
             if (saveDialog.ShowDialog() != true) { return;}
 
             var downloadFileName = saveDialog.FileName;
-            var task = Task.Run(() => Download(downloadFileName, id));
+            var task = Task.Run(() => Download(downloadFileName, id, _dbx));
             task.Wait();
         }
 
-        static async Task Upload(string file, string content)
+        static async Task Upload(string file, string content, DropboxClient dbx)
         {
             using (var mem = new MemoryStream(File.ReadAllBytes(content)))
             {
-                await _dbx.Files.UploadAsync(
+                await dbx.Files.UploadAsync(
                     file,
                     WriteMode.Overwrite.Instance,
                     body: mem);
@@ -244,7 +244,7 @@ namespace Cloud_Manager.Managers
                 string fileName = openFileDialog.FileName;
                 fileName = fileName.Substring(fileName.LastIndexOf('\\', fileName.Length - 2) + 1);
                 fileName = curDir.Path + '/' + fileName;
-                var task = Task.Run(() => Upload(fileName, openFileDialog.FileName));
+                var task = Task.Run(() => Upload(fileName, openFileDialog.FileName, _dbx));
                 task.Wait();
             }
         }

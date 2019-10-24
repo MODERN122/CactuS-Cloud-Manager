@@ -23,7 +23,7 @@ namespace Cloud_Manager.Managers
         private UserCredential _credential;
         private readonly string _pathName;
 
-        public static string Root = "";
+        public string Root = "";
 
         public ObservableCollection<Google.Apis.Drive.v3.Data.File> FolderItems { get; set; }
 
@@ -108,6 +108,9 @@ namespace Cloud_Manager.Managers
                                     MessageBox.Show("Ошибка при загрузке файла", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                                     break;
                                 }
+                            default:
+                                MessageBox.Show("Unexpected program behaviour");
+                                break;
                         }
                     };
                 request.DownloadAsync(stream);
@@ -212,7 +215,7 @@ namespace Cloud_Manager.Managers
             {
                 Name = newName
             };
-            Service.Files.Update(file, selectedFiles.First<FileStructure>().Id).Execute();
+            Service.Files.Update(file, selectedFiles.First().Id).Execute();
         }
 
         public override ObservableCollection<FileStructure> GetFiles()
@@ -243,7 +246,7 @@ namespace Cloud_Manager.Managers
             {
                 fileList = new ObservableCollection<Google.Apis.Drive.v3.Data.File>();
             }
-            return FileStructure.Convert(fileList);
+            return FileStructure.Convert(fileList, Root);
         }
     }
 }
