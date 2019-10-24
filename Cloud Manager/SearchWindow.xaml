@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="SearchWindow" Height="263.2" Width="500"
-        Closing="SearchWindow_Closing">
+        Closing="SearchWindow_OnClosing">
     <Grid>
         <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Имя" VerticalAlignment="Top"/>
         <TextBox Name="TbFileName" HorizontalAlignment="Left" Height="26" Margin="123,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="241"/>

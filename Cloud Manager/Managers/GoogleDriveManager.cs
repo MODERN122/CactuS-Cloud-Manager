@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 
@@ -123,7 +124,7 @@ namespace Cloud_Manager.Managers
             if (openFileDialog.ShowDialog() == true)
             {
                 string mimeType = "application/unknown";
-                string ext = Path.GetExtension(openFileDialog.FileName).ToLower();
+                string ext = Path.GetExtension(openFileDialog.FileName).ToLower(CultureInfo.InvariantCulture);
                 RegistryKey regKey = Registry.ClassesRoot.OpenSubKey(ext);
                 if (regKey != null && regKey.GetValue("Content Type") != null)
                 {
@@ -240,7 +241,7 @@ namespace Cloud_Manager.Managers
                         fileList.Add(item);
                     }
                 }
-                fileList.Add(new Google.Apis.Drive.v3.Data.File { Name = "Trash", Parents = new List<string>() { Root }, Trashed = false });
+                fileList.Add(new Google.Apis.Drive.v3.Data.File { Name = "Trash", Parents = new List<string> { Root }, Trashed = false });
             }
             else
             {

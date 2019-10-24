@@ -89,7 +89,7 @@ namespace Cloud_Manager
             MainWindow.WindowObject.IsEnabled = true;
         }
 
-        private int ConvertToBytes(int size, int cbIndex)
+        private static int ConvertToBytes(int size, int cbIndex)
         {
             switch (cbIndex)
             {
@@ -104,7 +104,7 @@ namespace Cloud_Manager
             }
         }
 
-        private void SearchWindow_Closing(object sender, CancelEventArgs cancelEventArgs)
+        private void SearchWindow_OnClosing(object sender, CancelEventArgs e)
         {
             MainWindow.WindowObject.IsEnabled = true;
         }

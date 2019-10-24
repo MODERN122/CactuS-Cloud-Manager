@@ -255,5 +255,6 @@ namespace Cloud_Manager
             }
             throw new ArgumentException("Not possible to compare these objects");
         }
+
     }
 }
