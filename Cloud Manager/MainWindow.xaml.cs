@@ -278,11 +278,11 @@ namespace Cloud_Manager
             Settings.Default.Save();
         }
 
-        public delegate void AddCloud(string name, CloudManagerType type);
+        
 
         private void addCloud_Click(object sender, RoutedEventArgs e)
         {
-            AddCloud method = _cloudManagerLogic.AddCloud;
+            AddCloudWindow.AddCloud method = _cloudManagerLogic.AddCloud;
             var addCloudWindow = new AddCloudWindow(method, _cloudManagerLogic.CloudList);
             IsEnabled = false;
             addCloudWindow.Show();

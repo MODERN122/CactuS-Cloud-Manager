@@ -13,9 +13,11 @@ namespace Cloud_Manager
     {
         private List<string> _clouds;
         private List<CloudInfo> _cloudsInfo;
-        private MainWindow.AddCloud _addCloudMethod;
+        public delegate void AddCloud(string name, CloudManagerType type);
 
-        public AddCloudWindow(MainWindow.AddCloud addCloudMethod, List<CloudInfo> clouds)
+        private AddCloud _addCloudMethod;
+
+        public AddCloudWindow(AddCloud addCloudMethod, List<CloudInfo> clouds)
         {
             InitializeComponent();
 
