@@ -4,6 +4,9 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Cloud_Manager.Managers;
+using System.Configuration;
+using System.Data.SqlClient;
+using Dropbox.Api.Files;
 
 namespace Cloud_Manager
 {
@@ -80,6 +83,27 @@ namespace Cloud_Manager
                     throw new NotImplementedException();
             }
 
+        }
+
+        /// <summary>
+        /// Creates a new cloud with specified name and type and adds it into CloudList
+        /// </summary>
+        /// <param name="name">A name of cloud</param>
+        /// <param name="fullType">A full type of cloud which include namespaces</param>
+        private void AddCloud(string name, string fullType)
+        {
+            switch (fullType)
+            {
+                case "Cloud_Manager.Managers.GoogleDriveManager":
+                    _cloudList.Add(new CloudInfo(name, new GoogleDriveManager(name)));
+                    break;
+
+                case "Cloud_Manager.Managers.DropboxManager":
+                    _cloudList.Add(new CloudInfo(name, new DropboxManager(name)));
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         /// <summary>
@@ -423,13 +447,20 @@ namespace Cloud_Manager
         /// </summary>
         public void SaveInfo()
         {
-            using (var stream = new FileStream("profile\\clouds.data", FileMode.Create))
+            string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                foreach (var cloud in _cloudList)
+                connection.Open();
+                SqlCommand command = new SqlCommand {Connection = connection};
+                command.Connection = connection;
+                command.CommandText = $"Delete from clouds where UserID = 1";
+                command.ExecuteNonQuery();
+                foreach (var item in CloudList)
                 {
-                    byte[] array = System.Text.Encoding.Default.GetBytes(cloud.Name + ':' + cloud.Cloud + ',');
-                    stream.Write(array, 0, array.Length);
+                    command.CommandText = $"INSERT INTO Clouds (CloudName, CloudType, UserID) VALUES ('{item.Name}', '{item.Cloud}', 1)";
+                    command.ExecuteNonQuery();
                 }
+                
             }
         }
 
@@ -440,19 +471,20 @@ namespace Cloud_Manager
         {
             try
             {
-                string[] textArray;
-                using (var stream = new FileStream("profile\\clouds.data", FileMode.Open, FileAccess.Read))
+                string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    byte[] array = new byte[stream.Length];
-                    stream.Read(array, 0, array.Length);
-                    string textFromFile = System.Text.Encoding.Default.GetString(array);
-                    textArray = textFromFile.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-                }
-
-                foreach (var item in textArray)
-                {
-                    AddCloud(item);
+                    connection.Open();
+                    SqlCommand command = new SqlCommand { Connection = connection };
+                    command.CommandText = $"SELECT * FROM Clouds WHERE UserID = 1";
+                    var reader = command.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            AddCloud(reader["CloudName"].ToString().TrimEnd(' '), reader["CloudType"].ToString().TrimEnd(' '));
+                        }
+                    }
                 }
             }
             catch (Exception)

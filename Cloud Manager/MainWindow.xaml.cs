@@ -242,7 +242,6 @@ namespace Cloud_Manager
                     ChangeLanguage("en-US");
                     MessageBox.Show("Program will run in English after restart.");
                     break;
-
                 case "Русский":
                     ChangeLanguage("ru-RU");
                     MessageBox.Show("Программа сменит язык после рестарта.");
