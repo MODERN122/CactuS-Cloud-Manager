@@ -11,7 +11,7 @@ namespace Cloud_Manager
 {
     public sealed partial class MainWindow : INotifyPropertyChanged
     {
-        public static string WindowName { get; } = "Cloud Manager";
+        public static string WindowName { get; } = "Cactus Cloud Manager";
 
         public static MainWindow WindowObject { get; private set; }
 
