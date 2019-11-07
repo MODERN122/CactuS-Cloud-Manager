@@ -11,26 +11,25 @@ namespace Cloud_Manager
     /// </summary>
     public partial class AddCloudWindow : Window
     {
-        private List<string> _clouds;
-        private List<CloudInfo> _cloudsInfo;
+        private readonly List<CloudInfo> _cloudsList;
         public delegate void AddCloud(string name, CloudManagerType type);
 
-        private AddCloud _addCloudMethod;
+        private readonly AddCloud _addCloudMethod;
 
         public AddCloudWindow(AddCloud addCloudMethod, List<CloudInfo> clouds)
         {
             InitializeComponent();
 
             _addCloudMethod = addCloudMethod;
-            _cloudsInfo = clouds;
+             _cloudsList = clouds;
 
-            _clouds = new List<string>();
+             List<string> cloudTypeList = new List<string>();
 
-            _clouds.Add("Dropbox");
-            _clouds.Add("Google Drive");
-            _clouds.Sort();
+             cloudTypeList.Add("Dropbox");
+             cloudTypeList.Add("Google Drive");
+             cloudTypeList.Sort();
 
-            ComboBoxClouds.ItemsSource = _clouds;
+            ComboBoxClouds.ItemsSource = cloudTypeList;
             ComboBoxClouds.SelectedIndex = 0;
         }
 
@@ -46,7 +45,7 @@ namespace Cloud_Manager
                 MessageBox.Show("Поле названия облака пустое.", "Ошибка");
                 return;
             }
-            foreach (var item in _cloudsInfo)
+            foreach (var item in _cloudsList)
             {
                 if (TbCloudName.Text == item.Name)
                 {
