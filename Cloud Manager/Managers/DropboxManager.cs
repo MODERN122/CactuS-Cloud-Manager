@@ -328,7 +328,7 @@ namespace Cloud_Manager.Managers
         [Obsolete]
         public override void UnTrashFile(ICollection<FileStructure> selectedFiles)
         {
-
+            throw new NotSupportedException();
         }
 
 
@@ -338,7 +338,7 @@ namespace Cloud_Manager.Managers
         [Obsolete]
         public override void ClearTrash()
         {
-
+            throw new NotSupportedException();
         }
 
         /// <summary>

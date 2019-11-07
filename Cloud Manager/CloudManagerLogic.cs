@@ -424,7 +424,7 @@ namespace Cloud_Manager
                     if (cloudItem.Name == item.Name)
                     {
                         _currentCloudInfo = cloudItem;
-                        _currentCloudInfo.CurrentDir = new FileStructure() { Name = "Root" };
+                        _currentCloudInfo.CurrentDir = new FileStructure { Name = "Root" };
                         PreviousPath = CurrentPath;
                         CurrentPath = '/' + _currentCloudInfo.Name + _currentCloudInfo.CurrentDir.Path;
                         return _currentCloudInfo.GetFilesInCurrentDir();
