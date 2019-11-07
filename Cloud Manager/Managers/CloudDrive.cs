@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace Cloud_Manager.Managers
 {
-    enum CloudManagerType
+    public enum CloudManagerType
     {
         GoogleDrive,
         Dropbox

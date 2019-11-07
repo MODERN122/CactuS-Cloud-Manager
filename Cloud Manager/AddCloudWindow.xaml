@@ -1,0 +1,20 @@
+﻿<Window x:Class="Cloud_Manager.AddCloudWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Cloud_Manager"
+        mc:Ignorable="d"
+        Title="AddCloudWindow" Height="150" Width="500"
+        Closing="AddCloudWindow_OnClosing">
+    <Grid>
+        <Label Content="Имя облака" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Height="26" Margin="112,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="192" Name="TbCloudName"/>
+
+        <Label Content="Сервис" HorizontalAlignment="Left" Margin="23,50,0,0" VerticalAlignment="Top"></Label>
+        <ComboBox Name="ComboBoxClouds" HorizontalAlignment="Left" Margin="112,53,0,0" VerticalAlignment="Top" Width="192"/>
+        <Button Click="AddCloud_OnClick"  Content="Добавить облако" HorizontalAlignment="Left" Margin="343,13,0,0" VerticalAlignment="Top" Width="137" Height="62"/>
+
+
+    </Grid>
+</Window>

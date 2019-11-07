@@ -13,12 +13,16 @@ namespace Cloud_Manager
     {
         private readonly List<CloudInfo> _clouds;
 
+        /// <summary>
+        /// Creating a search window and filling it with data
+        /// </summary>
+        /// <param name="clouds"></param>
         public SearchWindow(List<CloudInfo> clouds)
         {
             _clouds = new List<CloudInfo>(clouds);
             InitializeComponent();
             _clouds.Reverse();
-            _clouds.Add(new CloudInfo { Name = "All clouds" });
+            _clouds.Add(new CloudInfo { Name = Properties.Resources.SearchWindowAllClouds });
             _clouds.Reverse();
 
             ComboBoxDate.SelectedIndex = 0;
@@ -29,11 +33,16 @@ namespace Cloud_Manager
             ComboBoxGreater.SelectedIndex = 0;
         }
 
+        /// <summary>
+        /// Handles search button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Search_Click(object sender, RoutedEventArgs e)
         {
             string nameOfFile = TbFileName.Text;
-            string cloudName = (ComboBoxClouds.SelectionBoxItem as CloudInfo)?.Name == "All clouds"
-                ? "All clouds"
+            string cloudName = (ComboBoxClouds.SelectionBoxItem as CloudInfo)?.Name == Properties.Resources.SearchWindowAllClouds
+                ? Properties.Resources.SearchWindowAllClouds
                 : (ComboBoxClouds.SelectionBoxItem as CloudInfo)?.Name;
 
             int minSize = TbSizeAbove.Text == "" ? 0 : Int32.Parse(TbSizeAbove.Text);
@@ -53,9 +62,10 @@ namespace Cloud_Manager
             maxSize = ConvertToBytes(maxSize, cbIndex2);
 
             List<FileStructure> files = new List<FileStructure>();
-            if (cloudName != "All clouds")
+            if (cloudName != Properties.Resources.SearchWindowAllClouds)
             {
-                List<FileStructure> tmpFiles = (ComboBoxClouds.SelectionBoxItem as CloudInfo)?.SearchFiles(nameOfFile, minSize, maxSize, date,
+                List<FileStructure> tmpFiles = (ComboBoxClouds.SelectionBoxItem 
+                    as CloudInfo)?.SearchFiles(nameOfFile, minSize, maxSize, date,
                     isBeforeDate);
                 if (tmpFiles != null)
                 {
@@ -70,7 +80,7 @@ namespace Cloud_Manager
             {
                 foreach (var item in _clouds)
                 {
-                    if (item.Name != "All clouds")
+                    if (item.Name != Properties.Resources.SearchWindowAllClouds)
                     {
                         List<FileStructure> tmpFiles = item.SearchFiles(nameOfFile, minSize, maxSize, date, isBeforeDate);
                         foreach (var file in tmpFiles)
@@ -89,6 +99,12 @@ namespace Cloud_Manager
             MainWindow.WindowObject.IsEnabled = true;
         }
 
+        /// <summary>
+        /// Converts file size into bytes
+        /// </summary>
+        /// <param name="size"></param>
+        /// <param name="cbIndex">Type of size: 1 - KB, 2 - MB, 3 - GB</param>
+        /// <returns></returns>
         private static int ConvertToBytes(int size, int cbIndex)
         {
             switch (cbIndex)
@@ -103,6 +119,7 @@ namespace Cloud_Manager
                     return 1024 * 1024 * 1024 * size;
             }
         }
+
 
         private void SearchWindow_OnClosing(object sender, CancelEventArgs e)
         {
