@@ -45,7 +45,6 @@ namespace Cloud_Manager.Managers
                 _dbx = new DropboxClient(task.Result);
                 
             }
- 
         }
         #endregion
 
@@ -326,14 +325,17 @@ namespace Cloud_Manager.Managers
         /// <summary>
         /// There is no access to trash from .NET API
         /// </summary>
+        [Obsolete]
         public override void UnTrashFile(ICollection<FileStructure> selectedFiles)
         {
 
         }
 
+
         /// <summary>
         /// There is no access to trash from .NET API
         /// </summary>
+        [Obsolete]
         public override void ClearTrash()
         {
 

@@ -247,6 +247,11 @@ namespace Cloud_Manager
 
         #endregion
 
+        /// <summary>
+        /// Compares two files by its names
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public int CompareTo(object obj)
         {
             if (obj is FileStructure file)

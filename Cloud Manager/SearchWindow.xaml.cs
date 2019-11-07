@@ -13,6 +13,10 @@ namespace Cloud_Manager
     {
         private readonly List<CloudInfo> _clouds;
 
+        /// <summary>
+        /// Creating a search window and filling it with data
+        /// </summary>
+        /// <param name="clouds"></param>
         public SearchWindow(List<CloudInfo> clouds)
         {
             _clouds = new List<CloudInfo>(clouds);
@@ -29,6 +33,11 @@ namespace Cloud_Manager
             ComboBoxGreater.SelectedIndex = 0;
         }
 
+        /// <summary>
+        /// Handles search button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Search_Click(object sender, RoutedEventArgs e)
         {
             string nameOfFile = TbFileName.Text;
@@ -90,6 +99,12 @@ namespace Cloud_Manager
             MainWindow.WindowObject.IsEnabled = true;
         }
 
+        /// <summary>
+        /// Converts file size into bytes
+        /// </summary>
+        /// <param name="size"></param>
+        /// <param name="cbIndex">Type of size: 1 - KB, 2 - MB, 3 - GB</param>
+        /// <returns></returns>
         private static int ConvertToBytes(int size, int cbIndex)
         {
             switch (cbIndex)
@@ -104,6 +119,7 @@ namespace Cloud_Manager
                     return 1024 * 1024 * 1024 * size;
             }
         }
+
 
         private void SearchWindow_OnClosing(object sender, CancelEventArgs e)
         {

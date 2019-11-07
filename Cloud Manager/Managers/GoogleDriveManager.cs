@@ -74,6 +74,12 @@ namespace Cloud_Manager.Managers
                 Root = files[0].Parents[0];
             }
         }
+
+        /// <summary>
+        /// Downloads a file.
+        /// </summary>
+        /// <param name="name">The name of the file that file have on the computer</param>
+        /// <param name="id">ID of the file</param>
         public override void DownloadFile(string name, string id)
         {
             var saveDialog = new SaveFileDialog
@@ -118,6 +124,10 @@ namespace Cloud_Manager.Managers
             }
         }
 
+        /// <summary>
+        /// Uploads the file.
+        /// </summary>
+        /// <param name="curDir">The current cloud directory where the file will be uploaded</param>
         public override void UploadFile(FileStructure curDir)
         {
             var openFileDialog = new OpenFileDialog {Filter = "All files (*.*)|*.*", FileName = ""};
@@ -152,6 +162,11 @@ namespace Cloud_Manager.Managers
             }
         }
 
+        /// <summary>
+        /// Pastes the cutted files.
+        /// </summary>
+        /// <param name="cutFiles">Collection of cutted files</param>
+        /// <param name="curDir">The current cloud directory where the cutted files will be pasted</param>
         public override void PasteFiles(ICollection<FileStructure> cutFiles, FileStructure curDir)
         {
             FilesResource.UpdateRequest updateRequest;
@@ -167,6 +182,11 @@ namespace Cloud_Manager.Managers
             }
         }
 
+        /// <summary>
+        /// Creates a new folder.
+        /// </summary>
+        /// <param name="name">The name of a new folder</param>
+        /// <param name="parentDir">Cloud parent directory</param>
         public override void CreateFolder(string name, FileStructure parentDir)
         {
             string parent = MainWindow.WindowObject.FolderItems[0].Parents[0];
@@ -179,6 +199,10 @@ namespace Cloud_Manager.Managers
             Service.Files.Create(fileMetaData).Execute();
         }
 
+        /// <summary>
+        /// Deletes files.
+        /// </summary>
+        /// <param name="selectedFiles">Collection of selected files</param>
         public override void RemoveFile(ICollection<FileStructure> selectedFiles)
         {
             foreach (var item in selectedFiles)
@@ -187,6 +211,10 @@ namespace Cloud_Manager.Managers
             }
         }
 
+        /// <summary>
+        /// Moves files into trash directory.
+        /// </summary>
+        /// <param name="selectedFiles">Collection of selected files</param>
         public override void TrashFile(ICollection<FileStructure> selectedFiles)
         {
             foreach (var item in selectedFiles)
@@ -196,6 +224,10 @@ namespace Cloud_Manager.Managers
             }
         }
 
+        /// <summary>
+        /// Moves the files from trash directory into the previous directory.
+        /// </summary>
+        /// <param name="selectedFiles">Collection of selected files</param>
         public override void UnTrashFile(ICollection<FileStructure> selectedFiles)
         {
             foreach (var item in selectedFiles)
@@ -205,6 +237,9 @@ namespace Cloud_Manager.Managers
             }
         }
 
+        /// <summary>
+        /// Clears the trash.
+        /// </summary>
         public override void ClearTrash()
         {
             Service.Files.EmptyTrash().Execute();
@@ -219,6 +254,10 @@ namespace Cloud_Manager.Managers
             Service.Files.Update(file, selectedFiles.First().Id).Execute();
         }
 
+        /// <summary>
+        /// Gets a collection of the files.
+        /// </summary>
+        /// <returns></returns>
         public override ObservableCollection<FileStructure> GetFiles()
         {
             FilesResource.ListRequest listRequest = Service.Files.List();
