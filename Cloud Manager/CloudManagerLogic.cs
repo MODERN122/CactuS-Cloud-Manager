@@ -5,7 +5,9 @@ using System.IO;
 using System.Linq;
 using Cloud_Manager.Managers;
 using System.Configuration;
+using System.Data.Entity;
 using System.Data.SqlClient;
+using Cloud_Manager.Data;
 using Dropbox.Api.Files;
 
 namespace Cloud_Manager
@@ -13,6 +15,9 @@ namespace Cloud_Manager
     class CloudManagerLogic
     {
         #region Variables
+
+        private ApplicationContext _db;
+
         private readonly List<CloudInfo> _cloudList;
         private CloudInfo _currentCloudInfo;
 
@@ -52,6 +57,7 @@ namespace Cloud_Manager
         /// </summary>
         public CloudManagerLogic()
         {
+            _db = new ApplicationContext();
             _cloudList = new List<CloudInfo>();
             GetInfo();
             CurrentPath = "/";
@@ -447,21 +453,28 @@ namespace Cloud_Manager
         /// </summary>
         public void SaveInfo()
         {
-            string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            var clouds = _db.Clouds.Local;
+            foreach (var item in _cloudList)
             {
-                connection.Open();
-                SqlCommand command = new SqlCommand {Connection = connection};
-                command.Connection = connection;
-                command.CommandText = $"Delete from clouds where UserID = 1";
-                command.ExecuteNonQuery();
-                foreach (var item in CloudList)
+                var currentCloud = new Cloud {CloudName = item.Name, CloudType = item.Cloud.ToString(), UserName = "User1"};
+                bool exists = false;
+                foreach (var cloud in clouds)
                 {
-                    command.CommandText = $"INSERT INTO Clouds (CloudName, CloudType, UserID) VALUES ('{item.Name}', '{item.Cloud}', 1)";
-                    command.ExecuteNonQuery();
+                    if (cloud.CloudName == currentCloud.CloudName && cloud.CloudType == currentCloud.CloudType)
+                    {
+                        exists = true;
+                        break;
+                    }
+                }
+
+                if (!exists)
+                {
+                    _db.Clouds.Add(currentCloud);
                 }
                 
             }
+
+            _db.SaveChangesAsync();
         }
 
         /// <summary>
@@ -469,30 +482,19 @@ namespace Cloud_Manager
         /// </summary>
         public void GetInfo()
         {
+            _db.Clouds.Load();
             try
             {
-                string connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                foreach (var item in _db.Clouds)
                 {
-                    connection.Open();
-                    SqlCommand command = new SqlCommand { Connection = connection };
-                    command.CommandText = $"SELECT * FROM Clouds WHERE UserID = 1";
-                    var reader = command.ExecuteReader();
-                    if (reader.HasRows)
-                    {
-                        while (reader.Read())
-                        {
-                            AddCloud(reader["CloudName"].ToString().TrimEnd(' '), reader["CloudType"].ToString().TrimEnd(' '));
-                        }
-                    }
+                    AddCloud(item.CloudName, item.CloudType);
                 }
             }
             catch (Exception)
             {
                 // TODO: Add log messages
+
             }
-
-
         }
 
         #endregion
