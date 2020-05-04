@@ -25,7 +25,7 @@
 
     </Window.Resources>
     <StackPanel HorizontalAlignment="Left" Margin="0">
-        <Menu Height="25" VerticalAlignment="Top" Margin="0,0,-696,0" HorizontalAlignment="Left">
+        <Menu Height="40" VerticalAlignment="Top" Margin="0,0,-696,0" HorizontalAlignment="Left">
             <MenuItem Header="{x:Static res:Resources.CloudMenu}">
                 <MenuItem Header="{x:Static res:Resources.AddCloudMenuItem}" Click="addCloud_Click"/>
                 <MenuItem Header="{x:Static res:Resources.RenameCloudMenuItem}" Click="renameCloud_Click"/>
@@ -67,10 +67,10 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0" Orientation="Horizontal" Height="30" Margin="0,0,-693.6,0" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <Button Style="{StaticResource ButtonStyle}" Content="{x:Static res:Resources.HomeButton}" Click="home_Click"/>
-                <Button Style="{StaticResource ButtonStyle}" Content="{x:Static res:Resources.GoUpButton}" Click="goUp_Click"/>
-                <Button Style="{StaticResource ButtonStyle}" Content="{x:Static res:Resources.BackButton}" Click="back_Click"/>
-                <Button Style="{StaticResource ButtonStyle}" Content="{x:Static res:Resources.RefreshButton}" Click="refresh_Click"/>
+                <Button  Content="{x:Static res:Resources.HomeButton}" Click="home_Click"/>
+                <Button  Content="{x:Static res:Resources.GoUpButton}" Click="goUp_Click"/>
+                <Button  Content="{x:Static res:Resources.BackButton}" Click="back_Click"/>
+                <Button  Content="{x:Static res:Resources.RefreshButton}" Click="refresh_Click"/>
             </StackPanel>
 
             <DataGrid x:Name="GridItems" Grid.Row="1" ItemsSource="{Binding FolderItems}" AutoGenerateColumns="false" 
